@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="100dp"
+        android:paddingHorizontal="16dp">
+
+        <EditText
+            android:id="@+id/phoneNumText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="手机号码"
+            android:inputType="textPersonName"
+            android:textColorLink="@color/bootstrap_brand_info"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/psw_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="密码"
+            android:inputType="textPassword"
+            android:textColorLink="@color/bootstrap_brand_secondary_fill" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:onClick="attempLogin"
+            android:text="登陆"
+            app:bootstrapBrand="success"
+            app:bootstrapSize="lg"
+            app:buttonMode="regular"
+            app:roundedCorners="true"
+            app:showOutline="false" />
+
+    </LinearLayout>
+
+</LinearLayout>
