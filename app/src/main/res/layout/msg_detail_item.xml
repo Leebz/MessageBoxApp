@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/left_area"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:orientation="vertical"
+        android:layout_margin="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/left_date"
+            android:text="DATE_INFO"
+            android:textColor="@color/bootstrap_gray_light"
+            android:textSize="16sp"
+            android:layout_marginBottom="3dp"/>
+        <com.beardedhen.androidbootstrap.BootstrapLabel
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:bootstrapBrand="primary"
+            android:id="@+id/left_msg"
+            android:text="PREVIEW MESSAGE"
+            android:textSize="24sp"
+            android:textAlignment="textStart"
+            android:layout_gravity="start"
+            app:bootstrapHeading="h5"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/right_area"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:orientation="vertical"
+        android:layout_margin="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/right_date"
+            android:text="DATE_INFO"
+            android:textColor="@color/bootstrap_gray_light"
+            android:textSize="16sp"
+            android:layout_gravity="right"
+            android:layout_marginBottom="3dp"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right">
+            <com.beardedhen.androidbootstrap.BootstrapLabel
+                android:id="@+id/right_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:textAlignment="textStart"
+                android:text="这是短信内容长度测试这是短信内容长度测试这是短信内容长度测试这是短信内容长度测试这是短信内容长度测试"
+                app:bootstrapBrand="success"
+                app:bootstrapHeading="h5"
+
+
+                />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+</LinearLayout>

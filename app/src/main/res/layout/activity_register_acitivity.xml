@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".RegisterAcitivity">
 
     <LinearLayout
-        android:id="@+id/login_form"
+        android:id="@+id/register_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -33,19 +33,15 @@
             android:hint="密码"
             android:inputType="textPassword"
             android:textColorLink="@color/bootstrap_brand_secondary_fill" />
-
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/btn_login"
+        <EditText
+            android:id="@+id/psw_text_repeat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:onClick="attempLogin"
-            android:text="登陆"
-            app:bootstrapBrand="success"
-            app:bootstrapSize="lg"
-            app:buttonMode="regular"
-            app:roundedCorners="true"
-            app:showOutline="false" />
+            android:ems="10"
+            android:hint="重复密码"
+            android:inputType="textPassword"
+            android:textColorLink="@color/bootstrap_brand_secondary_fill" />
+
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/btn_register"
             android:layout_width="match_parent"

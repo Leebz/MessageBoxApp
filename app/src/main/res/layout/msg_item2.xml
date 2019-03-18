@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipelayout">
+    <!-- Bottom View Start-->
+    <LinearLayout
+        android:background="#66ddff00"
+        android:id="@+id/bottom_wrapper"
+        android:layout_width="160dp"
+        android:weightSum="1"
+        android:layout_height="match_parent"
+        >
+        <!--What you want to show-->
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="删除"
+            android:id="@+id/delete"
+            app:bootstrapBrand="danger"
+            app:roundedCorners="false"/>
+    </LinearLayout>
+    <!-- Bottom View End-->
+
+    <!-- Surface View Start -->
+    <LinearLayout
+        android:padding="10dp"
+        android:background="#ffffff"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <!--What you want to show in SurfaceView-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/msg_item_name"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:text="user1"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:layout_margin="8dp"/>
+
+            <TextView
+                android:id="@+id/msg_item_time"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:text="2019-1-1"
+                android:textColor="#000"
+                android:gravity="end"
+                android:textAlignment="textEnd"
+                android:textSize="18sp"
+                android:layout_margin="8dp"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/msg_item_preview"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_weight="1"
+            android:text="MessageContentPreviewShowHere"
+            android:layout_margin="8dp"
+            android:textSize="20dp"
+            />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#000000">
+
+        </View>
+
+    </LinearLayout>
+    <!-- Surface View End -->
+
+</com.daimajia.swipe.SwipeLayout>
