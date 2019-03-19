@@ -107,6 +107,8 @@ public class EditMsgActivity extends AppCompatActivity{
                 Intent intent = new Intent(EditMsgActivity.this, ChatActivity.class);
                 intent.putExtra("partner", getPureNumber(number));
                 startActivity(intent);
+                //destroy this activity ,because it remain a edit state
+                finish();
 
 
             }

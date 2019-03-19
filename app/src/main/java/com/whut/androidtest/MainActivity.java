@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int READ_CONTACT = 111;
     private static final int SEND_SMS = 112;
     private BootstrapButton btn_register;
+    int code1 ;
 
 
 
@@ -85,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
         if(!logincache.equals("null")){
             Intent intent =  new Intent(MainActivity.this, MsgPreviewActivity.class);
             startActivity(intent);
+            finish();
         }
-        startActivity(new Intent(MainActivity.this, MsgPreviewActivity.class));
+//        startActivity(new Intent(MainActivity.this, MsgPreviewActivity.class));
 
 
         btn_register = findViewById(R.id.btn_register);
@@ -137,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject json = JSON.parseObject(res);
                 Log.d("JSON",res);
                 int code = json.getInteger("code");
+                code1 = code;
                 if(code==200){
                     SharedPreferences sp = getSharedPreferences("USERINFO",0);
                     SharedPreferences.Editor editor = sp.edit();
@@ -144,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
                     editor.commit();
                     Intent intent =  new Intent(MainActivity.this, MsgPreviewActivity.class);
                     startActivity(intent);
+                    finish();
                 }
                 else if(code==404){
                     Looper.prepare();

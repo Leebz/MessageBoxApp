@@ -1,5 +1,6 @@
 package com.whut.androidtest;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -17,6 +18,9 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
@@ -31,12 +35,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class MsgPreviewActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MsgPreviewListAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private FloatingActionButton btnAddMsg;
+    private FloatingActionButton btnBackup;
     private HashMap<String, String> mContact;
+    private List<MsgPreviewBean> list;
     class QueryAsyncTask extends AsyncTask<Void, Void, List<MsgDetailBean>> {
         @Override
         protected List<MsgDetailBean> doInBackground(Void... voids) {
@@ -55,14 +70,30 @@ public class MsgPreviewActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("RESUME","RESUME");
+        list = getPreviewData(castPreview(ReadFromFile()));
+        mAdapter.setNewData(list);
+
+        mAdapter.notifyDataSetChanged();
+
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_msg_preview);
         //update Contact
 //        mContact = getContactPhoneNumber();
+        //destroy mainactivity
+        Log.d("CREATE","CREATE");
         SharedPreferences sp = getSharedPreferences("USERINFO",0);
         String host = sp.getString("PHONE_NUM","");
+
+        btnBackup = findViewById(R.id.backup);
 
 
 //        Log.d("CONTACT", mContact.size()+"");
@@ -73,7 +104,7 @@ public class MsgPreviewActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         //获取消息预览列表
-        List<MsgPreviewBean> list = ReadFromFile();
+        list = getPreviewData(castPreview(ReadFromFile()));
         mAdapter = new MsgPreviewListAdapter(R.layout.msg_item, list);
         //set item click listener
         mAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -103,6 +134,9 @@ public class MsgPreviewActivity extends AppCompatActivity {
 
             @Override
             public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
+                Log.d("SWIPED","SWIPED");
+                list.remove(pos);
+
 
             }
 
@@ -134,6 +168,48 @@ public class MsgPreviewActivity extends AppCompatActivity {
             }
         });
 
+        btnBackup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //push local data where state==1 to server
+                ArrayList<MsgDetailBean> msgs = ReadFromFile();
+                ArrayList<MsgDetailBean> msgTobeSend = new ArrayList<>();
+                for(MsgDetailBean msg: msgs){
+                    if(msg.getState()==1){
+                        msgTobeSend.add(msg);
+                    }
+                }
+//                JSONArray array = (JSONArray)JSON.toJSON(msgTobeSend);
+                String jsonStr = JSON.toJSONString(msgTobeSend);
+                OkHttpClient okHttpClient = new OkHttpClient();
+//                RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8"),jsonStr);
+                RequestBody requestBody = new FormBody.Builder()
+                        .add("host",host)
+                        .add("data",jsonStr).build();
+
+
+                Request request = new Request.Builder()
+                        .url("http://10.0.2.2/android/backup.php")
+                        .post(requestBody)
+                        .build();
+                okHttpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String res = response.body().string();
+                        Log.d("BACKUP",res);
+                        //update local file ,modify msgs state to 9
+
+                    }
+                });
+
+            }
+        });
+
 
 
     }
@@ -153,7 +229,23 @@ public class MsgPreviewActivity extends AppCompatActivity {
         }
         return data;
     }
-    public ArrayList<MsgPreviewBean> ReadFromFile(){
+
+    public ArrayList<MsgPreviewBean> getPreviewData(ArrayList<MsgPreviewBean> originData){
+        ArrayList<MsgPreviewBean> res = new ArrayList<>();
+        ArrayList<String> partners = new ArrayList<>();
+
+        //get preivew List
+        for(MsgPreviewBean preview : originData){
+            if(!partners.contains(preview.getUsername())){
+                partners.add(preview.getUsername());
+                res.add(preview);
+            }
+        }
+
+
+        return res;
+    }
+    public ArrayList<MsgDetailBean> ReadFromFile(){
         ArrayList<MsgDetailBean> data = new ArrayList<>();
         try {
             ObjectInputStream ois = new ObjectInputStream(this.openFileInput("data"));
@@ -164,15 +256,16 @@ public class MsgPreviewActivity extends AppCompatActivity {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return castPreview(data);
+        return data;
 
 
     }
     public ArrayList<MsgPreviewBean> castPreview(ArrayList<MsgDetailBean> details){
         ArrayList<MsgPreviewBean> res = new ArrayList<>();
-        //逆序会
+        //按照时间逆序 由新到旧输出
         for(int i=details.size()-1;i>=0;i--){
             MsgDetailBean msg = details.get(i);
+
             res.add(new MsgPreviewBean(msg.getPartner(),msg.getDate(),getPreviewContent(msg.getContent())));
         }
 

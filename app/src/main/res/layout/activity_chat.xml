@@ -63,7 +63,7 @@
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/btn_sned"
+            android:id="@+id/btn_send"
             android:text="发送"
             app:bootstrapBrand="regular"/>
 
