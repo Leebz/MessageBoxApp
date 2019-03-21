@@ -30,6 +30,7 @@ import com.whut.androidtest.Bean.MsgPreviewBean;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -181,6 +182,7 @@ public class MsgPreviewActivity extends AppCompatActivity {
                 }
 //                JSONArray array = (JSONArray)JSON.toJSON(msgTobeSend);
                 String jsonStr = JSON.toJSONString(msgTobeSend);
+                Log.d("JSON",jsonStr);
                 OkHttpClient okHttpClient = new OkHttpClient();
 //                RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8"),jsonStr);
                 RequestBody requestBody = new FormBody.Builder()
@@ -201,8 +203,26 @@ public class MsgPreviewActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         String res = response.body().string();
-                        Log.d("BACKUP",res);
-                        //update local file ,modify msgs state to 9
+                        Log.d("RES",res);
+                        JSONObject obj = JSON.parseObject(res);
+                        if(obj.getInteger("code")==200){
+                            //update local file ,modify msgs state to 9
+                            ArrayList<MsgDetailBean> msgs = ReadFromFile();
+                            for(MsgDetailBean msg : msgs){
+                                if(msg.getState()==1){
+                                    msg.setState(0);
+                                }
+                            }
+                            WriteToFile(msgs);
+                            //printres
+                            ArrayList<MsgDetailBean> datas = ReadFromFile();
+                            for(MsgDetailBean data : datas){
+                                Log.d("DATA",data.getPartner()+"  state"+data.getState());
+                            }
+
+
+
+                        }
 
                     }
                 });
@@ -260,6 +280,9 @@ public class MsgPreviewActivity extends AppCompatActivity {
 
 
     }
+    public void updateFile(){
+
+    }
     public ArrayList<MsgPreviewBean> castPreview(ArrayList<MsgDetailBean> details){
         ArrayList<MsgPreviewBean> res = new ArrayList<>();
         //按照时间逆序 由新到旧输出
@@ -278,6 +301,19 @@ public class MsgPreviewActivity extends AppCompatActivity {
             res = content.substring(0,40)+"...";
         }
         return res;
+    }
+    public void WriteToFile(ArrayList<MsgDetailBean> msgs){
+        try {
+
+            ObjectOutputStream oos = new ObjectOutputStream(this.openFileOutput("data", MODE_PRIVATE));
+            oos.writeObject(msgs);
+            oos.flush();
+            oos.close();
+//            Log.d("WRITE",list.size()+"");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
