@@ -2,7 +2,7 @@ package com.whut.androidtest.adapter;
 import com.chad.library.adapter.base.BaseItemDraggableAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.whut.androidtest.R;
-import com.whut.androidtest.Bean.MsgPreviewBean;
+import com.whut.androidtest.bean.MsgPreviewBean;
 
 import java.util.List;
 

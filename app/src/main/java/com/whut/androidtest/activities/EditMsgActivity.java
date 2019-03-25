@@ -45,33 +45,6 @@ public class EditMsgActivity extends AppCompatActivity{
     private Button btn_send;
     private TextView text_content;
 
-    class QueryAsyncTask extends AsyncTask<Void, Void, Void>{
-        @Override
-        protected Void doInBackground(Void... voids) {
-            List<MsgDetailBean> res= AppDatabase.getInstance(EditMsgActivity.this)
-                    .msgDetailDao()
-                    .getAllMsg();
-            Log.d("DBTEST",res.size()+"");
-            for(MsgDetailBean bean : res){
-                Log.d("BEAN",bean.getContent()+"  "+bean.getDate());
-            }
-            return null;
-        }
-
-
-    }
-
-
-    class InsertAsyncTask extends AsyncTask<MsgDetailBean, Void, Void>{
-
-        @Override
-        protected Void doInBackground(MsgDetailBean... msgDetailBeans) {
-            AppDatabase.getInstance(EditMsgActivity.this)
-                    .msgDetailDao()
-                    .insertMsg(msgDetailBeans);
-            return null;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

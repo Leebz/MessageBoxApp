@@ -1,18 +1,13 @@
 package com.whut.androidtest;
 
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
-import com.alibaba.fastjson.JSON;
-import com.whut.androidtest.Bean.MsgDetailBean;
+import com.whut.androidtest.bean.MsgDetailBean;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +17,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
 public class SMSReceiver extends BroadcastReceiver{
 //    FileOutputStream outputStream;
@@ -43,7 +39,9 @@ public class SMSReceiver extends BroadcastReceiver{
 
                 Log.d("SMS CONTENT",msg.getOriginatingAddress()+" "+msg.getDisplayMessageBody());
                 //insert to db
-                MsgDetailBean msgBean = new MsgDetailBean(msg.getDisplayMessageBody(), 0,
+                String uuid = UUID.randomUUID().toString().replaceAll("-","");
+
+                MsgDetailBean msgBean = new MsgDetailBean(uuid, msg.getDisplayMessageBody(), 0,
                         new Date().toLocaleString(),msg.getOriginatingAddress(),1);
 //                File file = new File(context.getFilesDir(), "data");
                 WriteToFile(msgBean, context);

@@ -61,7 +61,7 @@ public class RegisterAcitivity extends AppCompatActivity {
                             .add("psw",psw)
                             .build();
                     Request request = new Request.Builder()
-                            .url("http://10.0.2.2/android/login.php")
+                            .url("http://10.0.2.2/Android/login.php")
                             .post(requestBody)
                             .build();
                     okHttpClient.newCall(request).enqueue(new Callback() {

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.whut.androidtest">
-
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -11,33 +10,31 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-
-        <activity android:name=".ChatActivity" />
-        <activity android:name=".RegisterAcitivity" />
-        <activity android:name=".EditMsgActivity" />
-        <activity android:name=".MsgPreviewActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.checkFinger"></activity>
+        <activity android:name=".activities.Setting" />
+        <activity android:name=".activities.MsgsListActivity" />
+        <activity android:name=".BounceView" />
+        <activity android:name=".activities.ChatActivity" />
+        <activity android:name=".activities.RegisterAcitivity" />
+        <activity android:name=".activities.EditMsgActivity" />
+        <activity android:name=".activities.MsgPreviewActivity" />
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <receiver android:name=".SMSReceiver">
-            <intent-filter android:priority="999">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

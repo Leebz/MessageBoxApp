@@ -4,7 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.whut.androidtest.Bean.MsgDetailBean;
+import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.R;
 
 import java.util.List;

@@ -1,13 +1,16 @@
 package com.whut.androidtest;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
+import android.telephony.SmsMessage;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -35,14 +38,62 @@ public class ChatActivity extends AppCompatActivity {
     private TextView text_user_info;
     private TextView text_input;
     private BootstrapButton btn_send;
+    private String partner;
+    private ArrayList<MsgDetailBean> data;
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("RECEIVE","短信类了");
+            Bundle bundle = intent.getExtras();
+            SmsMessage msg = null;
+            if(bundle!=null){
+                Object[] smsObj = (Object[])bundle.get("pdus");
+                for(Object object:smsObj){
+                    msg = SmsMessage.createFromPdu((byte[]) object);
 
+                    Log.d("短信内容",msg.getOriginatingAddress()+" "+msg.getDisplayMessageBody());
+                    //write to file
+                    MsgDetailBean msgBean = new MsgDetailBean(msg.getDisplayMessageBody(), 0,
+                            new Date().toLocaleString(),msg.getOriginatingAddress(),1);
+                    WriteToFile(msgBean);
+                    //update UI
+                    if(partner.equals(msgBean.getPartner())){
+                        data.add(msgBean);
+                        mAdapter.notifyDataSetChanged();
+                    }
+
+
+
+
+
+                }
+            }
+
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //Register boardcast
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_chat);
-        String partner = getIntent().getExtras().getString("partner");
+        partner = getIntent().getExtras().getString("partner");
         text_user_info = findViewById(R.id.text_receiver);
         text_user_info.setText(partner);
         text_input = findViewById(R.id.text_input);
@@ -54,7 +105,7 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        List<MsgDetailBean> data = getMsgList(partner);
+        data = getMsgList(partner);
 
 
         mAdapter = new MsgListAdapter(R.layout.msg_detail_item, data);

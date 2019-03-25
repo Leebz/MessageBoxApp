@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AndroidTest</string>
+    <string name="app_name">云信</string>
     <string name="title_activity_login">Sign in</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

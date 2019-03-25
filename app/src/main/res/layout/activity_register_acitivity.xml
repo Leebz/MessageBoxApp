@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".RegisterAcitivity">
+    tools:context=".activities.RegisterAcitivity">
 
     <LinearLayout
         android:id="@+id/register_form"

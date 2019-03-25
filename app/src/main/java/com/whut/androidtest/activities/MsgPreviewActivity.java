@@ -1,7 +1,10 @@
 package com.whut.androidtest;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Canvas;
@@ -13,6 +16,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -27,11 +31,13 @@ import com.chad.library.adapter.base.listener.OnItemSwipeListener;
 import com.whut.androidtest.Bean.MsgDetailBean;
 import com.whut.androidtest.adapter.MsgPreviewListAdapter;
 import com.whut.androidtest.Bean.MsgPreviewBean;
+import com.whut.androidtest.adapter.SwipeAdapter;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
@@ -51,23 +57,38 @@ public class MsgPreviewActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private FloatingActionButton btnAddMsg;
     private FloatingActionButton btnBackup;
+    private FloatingActionButton btnSyn;
     private HashMap<String, String> mContact;
     private List<MsgPreviewBean> list;
-    class QueryAsyncTask extends AsyncTask<Void, Void, List<MsgDetailBean>> {
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
-        protected List<MsgDetailBean> doInBackground(Void... voids) {
-            List<MsgDetailBean> res= AppDatabase.getInstance(MsgPreviewActivity.this)
-                    .msgDetailDao()
-                    .getAllMsg();
+        public void onReceive(Context context, Intent intent) {
+            Log.d("RECEIVE","短信类了");
+            Bundle bundle = intent.getExtras();
+            SmsMessage msg = null;
+            if(bundle!=null){
+                Object[] smsObj = (Object[])bundle.get("pdus");
+                for(Object object:smsObj){
+                    msg = SmsMessage.createFromPdu((byte[]) object);
 
-            return res;
+                    Log.d("短信内容",msg.getOriginatingAddress()+" "+msg.getDisplayMessageBody());
+                    //write to file
+                    MsgDetailBean msgBean = new MsgDetailBean(msg.getDisplayMessageBody(), 0,
+                            new Date().toLocaleString(),msg.getOriginatingAddress(),1);
+                    WriteToFile(msgBean);
+                    //update UI
+                    list = getPreviewData(castPreview(ReadFromFile()));
+                    mAdapter.setNewData(list);
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
         }
+    };
 
-        @Override
-        protected void onPostExecute(List<MsgDetailBean> msgDetailBeans) {
-            super.onPostExecute(msgDetailBeans);
-
-        }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -78,6 +99,9 @@ public class MsgPreviewActivity extends AppCompatActivity {
         mAdapter.setNewData(list);
 
         mAdapter.notifyDataSetChanged();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        registerReceiver(broadcastReceiver, intentFilter);
 
 
     }
@@ -95,6 +119,7 @@ public class MsgPreviewActivity extends AppCompatActivity {
         String host = sp.getString("PHONE_NUM","");
 
         btnBackup = findViewById(R.id.backup);
+        btnSyn = findViewById(R.id.syn);
 
 
 //        Log.d("CONTACT", mContact.size()+"");
@@ -125,6 +150,7 @@ public class MsgPreviewActivity extends AppCompatActivity {
         OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
             @Override
             public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
+                Log.d("SWIPED",pos+"");
 
             }
 
@@ -135,8 +161,7 @@ public class MsgPreviewActivity extends AppCompatActivity {
 
             @Override
             public void onItemSwiped(RecyclerView.ViewHolder viewHolder, int pos) {
-                Log.d("SWIPED","SWIPED");
-                list.remove(pos);
+
 
 
             }
@@ -180,53 +205,60 @@ public class MsgPreviewActivity extends AppCompatActivity {
                         msgTobeSend.add(msg);
                     }
                 }
-//                JSONArray array = (JSONArray)JSON.toJSON(msgTobeSend);
-                String jsonStr = JSON.toJSONString(msgTobeSend);
-                Log.d("JSON",jsonStr);
-                OkHttpClient okHttpClient = new OkHttpClient();
-//                RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8"),jsonStr);
-                RequestBody requestBody = new FormBody.Builder()
-                        .add("host",host)
-                        .add("data",jsonStr).build();
+                if(msgTobeSend.size()>0){
+                    String jsonStr = JSON.toJSONString(msgTobeSend);
+                    Log.d("JSON",jsonStr);
+                    OkHttpClient okHttpClient = new OkHttpClient();
+                    RequestBody requestBody = new FormBody.Builder()
+                            .add("host",host)
+                            .add("data",jsonStr).build();
 
 
-                Request request = new Request.Builder()
-                        .url("http://10.0.2.2/android/backup.php")
-                        .post(requestBody)
-                        .build();
-                okHttpClient.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        String res = response.body().string();
-                        Log.d("RES",res);
-                        JSONObject obj = JSON.parseObject(res);
-                        if(obj.getInteger("code")==200){
-                            //update local file ,modify msgs state to 9
-                            ArrayList<MsgDetailBean> msgs = ReadFromFile();
-                            for(MsgDetailBean msg : msgs){
-                                if(msg.getState()==1){
-                                    msg.setState(0);
-                                }
-                            }
-                            WriteToFile(msgs);
-                            //printres
-                            ArrayList<MsgDetailBean> datas = ReadFromFile();
-                            for(MsgDetailBean data : datas){
-                                Log.d("DATA",data.getPartner()+"  state"+data.getState());
-                            }
-
-
+                    Request request = new Request.Builder()
+                            .url("http://10.0.2.2/Android/backup.php")
+                            .post(requestBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
 
                         }
 
-                    }
-                });
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String res = response.body().string();
+                            Log.d("RES",res);
+                            JSONObject obj = JSON.parseObject(res);
+                            if(obj.getInteger("code")==200){
+                                //update local file ,modify msgs state to 9
+                                ArrayList<MsgDetailBean> msgs = ReadFromFile();
+                                for(MsgDetailBean msg : msgs){
+                                    if(msg.getState()==1){
+                                        msg.setState(0);
+                                    }
+                                }
+                                WriteToFile(msgs);
+                                //printres
+                                ArrayList<MsgDetailBean> datas = ReadFromFile();
+                                for(MsgDetailBean data : datas){
+                                    Log.d("DATA",data.getPartner()+"  state"+data.getState());
+                                }
 
+
+
+                            }
+
+                        }
+                    });
+                }
+
+
+            }
+        });
+        btnSyn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MsgPreviewActivity.this, Swipe.class));
             }
         });
 
@@ -314,6 +346,21 @@ public class MsgPreviewActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+    public void WriteToFile(MsgDetailBean msg){
+        try {
+
+            ArrayList<MsgDetailBean> list = ReadFromFile();
+            ObjectOutputStream oos = new ObjectOutputStream(this.openFileOutput("data", MODE_PRIVATE));
+            list.add(msg);
+            oos.writeObject(list);
+
+            oos.flush();
+            oos.close();
+            Log.d("WRITE",list.size()+"");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
