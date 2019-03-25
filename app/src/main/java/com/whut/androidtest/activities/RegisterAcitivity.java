@@ -1,4 +1,4 @@
-package com.whut.androidtest;
+package com.whut.androidtest.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.whut.androidtest.R;
 
 import java.io.IOException;
 

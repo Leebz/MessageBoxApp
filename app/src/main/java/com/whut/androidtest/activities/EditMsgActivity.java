@@ -1,13 +1,11 @@
-package com.whut.androidtest;
+package com.whut.androidtest.activities;
 
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.arch.persistence.room.Room;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -16,27 +14,20 @@ import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.whut.androidtest.Bean.MsgDetailBean;
-import com.whut.androidtest.Bean.UserBean;
+import com.whut.androidtest.bean.MsgDetailBean;
+import com.whut.androidtest.R;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.UUID;
 
 public class EditMsgActivity extends AppCompatActivity{
     private ImageView btnContact;
@@ -70,12 +61,12 @@ public class EditMsgActivity extends AppCompatActivity{
                 PendingIntent pi = PendingIntent.getBroadcast(EditMsgActivity.this,0,new Intent(),0);
                 sms.sendTextMessage(number,null,text_content.getText().toString(),pi,null);
                 //Update DB
-                MsgDetailBean msg = new MsgDetailBean(text_content.getText().toString(),1, new Date().toLocaleString(), getPureNumber(number),1);
+                String uuid = UUID.randomUUID().toString().replaceAll("-","");
+                Log.d("UUID",uuid);
+                MsgDetailBean msg = new MsgDetailBean(uuid, text_content.getText().toString(),1, new Date().toLocaleString(), getPureNumber(number),1);
 
                 WriteToFile(msg);
-//                ReadFromFile();
-//                new InsertAsyncTask().execute(msg);
-//                new QueryAsyncTask().execute();
+
                 //jump to chatActivity
                 Intent intent = new Intent(EditMsgActivity.this, ChatActivity.class);
                 intent.putExtra("partner", getPureNumber(number));

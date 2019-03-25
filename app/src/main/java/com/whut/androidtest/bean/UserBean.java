@@ -1,4 +1,4 @@
-package com.whut.androidtest.Bean;
+package com.whut.androidtest.bean;
 
 import java.io.Serializable;
 

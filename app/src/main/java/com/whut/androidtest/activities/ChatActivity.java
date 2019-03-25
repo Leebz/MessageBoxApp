@@ -1,10 +1,12 @@
-package com.whut.androidtest;
+package com.whut.androidtest.activities;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,19 +22,19 @@ import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.whut.androidtest.Bean.MsgDetailBean;
-import com.whut.androidtest.adapter.MsgListAdapter;
+import com.whut.androidtest.bean.MsgDetailBean;
+import com.whut.androidtest.R;
+import com.whut.androidtest.adapter.ChatListAdapter;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.UUID;
 
 public class ChatActivity extends AppCompatActivity {
-    private MsgListAdapter mAdapter;
+    private ChatListAdapter mAdapter;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private TextView text_user_info;
@@ -53,7 +55,9 @@ public class ChatActivity extends AppCompatActivity {
 
                     Log.d("短信内容",msg.getOriginatingAddress()+" "+msg.getDisplayMessageBody());
                     //write to file
-                    MsgDetailBean msgBean = new MsgDetailBean(msg.getDisplayMessageBody(), 0,
+                    String uuid = UUID.randomUUID().toString().replaceAll("-","");
+
+                    MsgDetailBean msgBean = new MsgDetailBean(uuid,msg.getDisplayMessageBody(), 0,
                             new Date().toLocaleString(),msg.getOriginatingAddress(),1);
                     WriteToFile(msgBean);
                     //update UI
@@ -108,8 +112,37 @@ public class ChatActivity extends AppCompatActivity {
         data = getMsgList(partner);
 
 
-        mAdapter = new MsgListAdapter(R.layout.msg_detail_item, data);
+        mAdapter = new ChatListAdapter(R.layout.msg_detail_item, data);
         recyclerView.setAdapter(mAdapter);
+//        recyclerView.smoothScrollToPosition();
+        recyclerView.scrollToPosition(data.size()-1);
+
+        mAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                AlertDialog.Builder normalDialog = new AlertDialog.Builder(ChatActivity.this);
+                normalDialog.setTitle("警告");
+                normalDialog.setMessage("确定删除此消息吗?");
+                normalDialog.setPositiveButton("确定",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(ChatActivity.this, "POSITION"+position, Toast.LENGTH_SHORT).show();
+                                //...To-do
+                            }
+                        });
+                normalDialog.setNegativeButton("关闭",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //...To-do
+                            }
+                        });
+                // 显示
+                normalDialog.show();
+                return true;
+            }
+        });
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +153,8 @@ public class ChatActivity extends AppCompatActivity {
                     PendingIntent pi = PendingIntent.getBroadcast(ChatActivity.this,0,new Intent(),0);
                     sms.sendTextMessage(partner,null,text_input.getText().toString(),pi,null);
                     //update local data file
-                    MsgDetailBean msg = new MsgDetailBean(text_input.getText().toString(),1, new Date().toLocaleString(), getPureNumber(partner),1);
+                    String uuid = UUID.randomUUID().toString().replaceAll("-","");
+                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, new Date().toLocaleString(), getPureNumber(partner),1);
                     data.add(msg);
                     WriteToFile(msg);
                     //redraw UI

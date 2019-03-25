@@ -1,20 +1,15 @@
-package com.whut.androidtest;
+package com.whut.androidtest.activities;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
-import android.os.Handler;
 import android.os.Looper;
 import android.provider.Telephony;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,13 +19,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.tbruyelle.rxpermissions.RxPermissions;
+import com.whut.androidtest.R;
+import com.whut.androidtest.bean.MsgDetailBean;
+import com.whut.androidtest.util.FileHelper;
+
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 
 import okhttp3.Call;
@@ -47,11 +47,14 @@ import rx.functions.Action1;
 public class MainActivity extends AppCompatActivity {
     private TextView text_phone;
     private TextView text_psw;
+
     private static final String USER_ID = "USERID";
     private static final int READ_CONTACT = 111;
     private static final int SEND_SMS = 112;
     private BootstrapButton btn_register;
-    int code1 ;
+    int code1;
+    private FileHelper fileHelper = new FileHelper(this);
+
 
 
 
@@ -60,14 +63,53 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        Stetho.initializeWithDefaults(this);
         setContentView(R.layout.activity_main);
-        //初始化数据库
-        checkDefaultSettings();
+//        if(checkDefaultSettings()){
+//            getPermission();
+//
+//        }
+//        else{
+//            finish();
+//        }
+        getPermission();
 
 
 
+
+
+        text_phone = (TextView)findViewById(R.id.phoneNumText);
+        text_psw = (TextView)findViewById(R.id.psw_text);
+        //获取登陆状态
+        SharedPreferences sp = getSharedPreferences("USERINFO",0);
+        String logincache = sp.getString("PHONE_NUM","null");
+        if(!logincache.equals("null")){
+
+            Intent intent =  new Intent(MainActivity.this, MsgsListActivity.class);
+            startActivity(intent);
+            finish();
+        }
+        else{
+            //获取短信
+
+        }
+
+
+
+
+        btn_register = findViewById(R.id.btn_register);
+        btn_register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, RegisterAcitivity.class));
+            }
+        });
+
+    }
+
+    public void getPermission(){
         //申请权限
         RxPermissions.getInstance(MainActivity.this)
                 .request(Manifest.permission.SEND_SMS,
+                        Manifest.permission.READ_SMS,
                         Manifest.permission.RECEIVE_SMS,
                         Manifest.permission.READ_CONTACTS)
                 .subscribe(new Action1<Boolean>() {
@@ -81,29 +123,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-
-        text_phone = (TextView)findViewById(R.id.phoneNumText);
-        text_psw = (TextView)findViewById(R.id.psw_text);
-        SharedPreferences sp = getSharedPreferences("USERINFO",0);
-        String logincache = sp.getString("PHONE_NUM","null");
-//        保存登陆状态
-        if(!logincache.equals("null")){
-            Intent intent =  new Intent(MainActivity.this, MsgPreviewActivity.class);
-            startActivity(intent);
-            finish();
-        }
-
-//        startActivity(new Intent(MainActivity.this, MsgPreviewActivity.class));
-
-
-        btn_register = findViewById(R.id.btn_register);
-        btn_register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, RegisterAcitivity.class));
-            }
-        });
-
     }
     private boolean checkDefaultSettings() {
 
@@ -185,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString("PHONE_NUM", phoneNumber);
                     editor.commit();
-                    Intent intent =  new Intent(MainActivity.this, MsgPreviewActivity.class);
+                    Intent intent =  new Intent(MainActivity.this, MsgsListActivity.class);
                     startActivity(intent);
                     finish();
                 }

@@ -1,6 +1,5 @@
-package com.whut.androidtest;
+package com.whut.androidtest.activities;
 
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +7,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Canvas;
-import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -23,15 +21,14 @@ import android.view.Window;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemSwipeListener;
-import com.whut.androidtest.Bean.MsgDetailBean;
+import com.whut.androidtest.bean.MsgDetailBean;
+import com.whut.androidtest.R;
 import com.whut.androidtest.adapter.MsgPreviewListAdapter;
-import com.whut.androidtest.Bean.MsgPreviewBean;
-import com.whut.androidtest.adapter.SwipeAdapter;
+import com.whut.androidtest.bean.MsgPreviewBean;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -40,12 +37,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Stack;
+import java.util.UUID;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -73,7 +69,9 @@ public class MsgPreviewActivity extends AppCompatActivity {
 
                     Log.d("短信内容",msg.getOriginatingAddress()+" "+msg.getDisplayMessageBody());
                     //write to file
-                    MsgDetailBean msgBean = new MsgDetailBean(msg.getDisplayMessageBody(), 0,
+                    String uuid = UUID.randomUUID().toString().replaceAll("-","");
+
+                    MsgDetailBean msgBean = new MsgDetailBean(uuid,msg.getDisplayMessageBody(), 0,
                             new Date().toLocaleString(),msg.getOriginatingAddress(),1);
                     WriteToFile(msgBean);
                     //update UI
@@ -146,7 +144,7 @@ public class MsgPreviewActivity extends AppCompatActivity {
 
 
 
-        //Add Swipe to delete Listener
+        //Add MsgsListActivity to delete Listener
         OnItemSwipeListener onItemSwipeListener = new OnItemSwipeListener() {
             @Override
             public void onItemSwipeStart(RecyclerView.ViewHolder viewHolder, int pos) {
@@ -258,7 +256,7 @@ public class MsgPreviewActivity extends AppCompatActivity {
         btnSyn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MsgPreviewActivity.this, Swipe.class));
+                startActivity(new Intent(MsgPreviewActivity.this, MsgsListActivity.class));
             }
         });
 

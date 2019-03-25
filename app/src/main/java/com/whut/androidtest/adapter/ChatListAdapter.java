@@ -9,13 +9,14 @@ import com.whut.androidtest.R;
 
 import java.util.List;
 
-public class MsgListAdapter extends BaseQuickAdapter<MsgDetailBean, BaseViewHolder> {
-    public MsgListAdapter(int layoutResId, @Nullable List<MsgDetailBean> data) {
+public class ChatListAdapter extends BaseQuickAdapter<MsgDetailBean, BaseViewHolder> {
+    public ChatListAdapter(int layoutResId, @Nullable List<MsgDetailBean> data) {
         super(layoutResId, data);
     }
 
     @Override
     protected void convert(BaseViewHolder helper, MsgDetailBean item) {
+
         if(item.getType()==0){
             //隐藏右侧布局
             helper.setGone(R.id.left_area,true)

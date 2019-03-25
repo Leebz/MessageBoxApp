@@ -1,25 +1,18 @@
-package com.whut.androidtest.Bean;
-
-
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-
+package com.whut.androidtest.bean;
 import java.io.Serializable;
 
-@Entity(tableName = "Msgs")
 public class MsgDetailBean implements Serializable {
     private static final int TYPE_RECEIVED = 0;
     private static final int TYPE_SENT = 1;
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    private String id;
     private String content;
     private int type;
     private String date;
     private String partner;
     private int state;
 
-    public MsgDetailBean(String content, int type, String date, String partner, int state) {
-
+    public MsgDetailBean(String id, String content, int type, String date, String partner, int state) {
+        this.id = id;
         this.content = content;
         this.type = type;
         this.date = date;
@@ -27,11 +20,11 @@ public class MsgDetailBean implements Serializable {
         this.state = state;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
