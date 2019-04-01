@@ -15,12 +15,17 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.R;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -31,10 +36,10 @@ import java.util.UUID;
 
 public class EditMsgActivity extends AppCompatActivity{
     private ImageView btnContact;
-    private TextView textReciver;
+    private EditText textReciver;
     private String number;
-    private Button btn_send;
-    private TextView text_content;
+    private BootstrapButton btn_send;
+    private BootstrapEditText text_content;
 
 
     @Override
@@ -51,11 +56,21 @@ public class EditMsgActivity extends AppCompatActivity{
             public void onClick(View v) {
                 //check receiver
                 if(TextUtils.isEmpty(textReciver.getText())){
-                    Toast.makeText(EditMsgActivity.this, "请填写正确的收件人", Toast.LENGTH_SHORT).show();
+                    textReciver.setError("请选择收件人");
                     return;
                 }
                 else if(number==null){
-                    number = textReciver.getText().toString();
+                    if(TextUtils.isDigitsOnly(textReciver.getText())){
+                        number = textReciver.getText().toString();
+                    }
+                    else{
+                        textReciver.setError("请填写正确的收件人");
+                        return;
+                    }
+                }
+                if(TextUtils.isEmpty(text_content.getText())){
+                    text_content.setError("请填写短信");
+                    return;
                 }
                 SmsManager sms = SmsManager.getDefault();
                 PendingIntent pi = PendingIntent.getBroadcast(EditMsgActivity.this,0,new Intent(),0);

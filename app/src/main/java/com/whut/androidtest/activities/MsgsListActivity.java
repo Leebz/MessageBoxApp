@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
-import android.graphics.drawable.DrawableContainer;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 
 import com.daimajia.swipe.util.Attributes;
 import com.whut.androidtest.R;
-import com.whut.androidtest.adapter.SwipeAdapter;
 import com.whut.androidtest.adapter.recyclerAdapter;
 import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.bean.MsgPreviewBean;
@@ -135,7 +133,7 @@ public class MsgsListActivity extends AppCompatActivity {
         setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MsgsListActivity.this, Setting.class));
+                startActivity(new Intent(MsgsListActivity.this, SettingActivity.class));
             }
         });
         fab.setOnClickListener(new View.OnClickListener() {

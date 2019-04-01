@@ -11,54 +11,55 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="1"
+        android:layout_margin="8dp"
         >
 
         <EditText
             android:id="@+id/text_receiver"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="9"
+            android:layout_weight="1"
             android:hint="收信人"
             android:inputType="textPersonName"
-            android:layout_margin="10dp"/>
+            android:textColorLink="@color/bootstrap_gray" />
 
         <ImageView
             android:id="@+id/btn_contact"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
+
             app:srcCompat="@drawable/ic_person_black_24dp" />
 
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1000"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="1">
-
-        <EditText
+        android:layout_margin="8dp">
+        <com.beardedhen.androidbootstrap.BootstrapEditText
             android:id="@+id/text_content"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:ems="10"
-            android:hint="内容"
-            android:inputType="textPersonName" />
+            app:roundedCorners="true"
+            app:bootstrapBrand="primary"/>
 
-        <Button
-            android:id="@+id/btn_send"
-            android:layout_width="match_parent"
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="4"
-            android:text="发送" />
+            android:id="@+id/btn_send"
+            android:text="发送"
+            android:layout_marginLeft="3dp"
+            app:roundedCorners="true"
+            app:bootstrapBrand="primary"
+            android:hint="短信"/>
+
     </LinearLayout>
 
 </LinearLayout>

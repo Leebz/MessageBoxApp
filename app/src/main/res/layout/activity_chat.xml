@@ -24,13 +24,13 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="3dp"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="PHONENUMBER"
-            android:textColor="#000"
-            android:textSize="18sp"
-            android:textAlignment="center"/>
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="PHONENUMBER"-->
+            <!--android:textColor="#000"-->
+            <!--android:textSize="18sp"-->
+            <!--android:textAlignment="center"/>-->
     </LinearLayout>
     <View
         android:layout_width="match_parent"
@@ -54,18 +54,23 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_margin="8dp">
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <com.beardedhen.androidbootstrap.BootstrapEditText
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:hint="短信"
             android:id="@+id/text_input"
-            android:hint="输入短信内容"
-            android:layout_weight="1"/>
+            app:roundedCorners="true"
+            />
+
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/btn_send"
             android:text="发送"
-            app:bootstrapBrand="regular"/>
+            app:bootstrapBrand="primary"
+            android:layout_marginLeft="3dp"
+            app:roundedCorners="true"/>
 
     </LinearLayout>
 

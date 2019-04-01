@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whut.androidtest.R;
+import com.whut.androidtest.adapter.DialogListAdapter;
 import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.util.FileHelper;
 
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         String logincache = sp.getString("PHONE_NUM","null");
         if(!logincache.equals("null")){
 
-            Intent intent =  new Intent(MainActivity.this, MsgsListActivity.class);
+            Intent intent =  new Intent(MainActivity.this, DialogListActivity.class);
             startActivity(intent);
             finish();
         }
@@ -204,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = sp.edit();
                     editor.putString("PHONE_NUM", phoneNumber);
                     editor.commit();
-                    Intent intent =  new Intent(MainActivity.this, MsgsListActivity.class);
+                    Intent intent =  new Intent(MainActivity.this, DialogListActivity.class);
                     startActivity(intent);
                     finish();
                 }

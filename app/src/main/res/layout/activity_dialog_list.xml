@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.MsgsListActivity"
+    tools:context=".activities.DialogListActivity"
     android:id="@+id/ConstraintLayout"
     >
     <LinearLayout
@@ -35,10 +35,10 @@
                 />
 
             <ImageView
-                android:id="@+id/setting"
+                android:id="@+id/img_setting"
                 android:layout_gravity="center_vertical"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="20dp"
                 android:contentDescription="setting"
                 android:layout_weight="10"
                 app:srcCompat="@drawable/menu" />

@@ -22,7 +22,8 @@ public class ChatListAdapter extends BaseQuickAdapter<MsgDetailBean, BaseViewHol
             helper.setGone(R.id.left_area,true)
                     .setGone(R.id.right_area,false)
                     .setText(R.id.left_date, item.getDate())
-                    .setText(R.id.left_msg, item.getContent());
+                    .setText(R.id.left_msg, item.getContent())
+                    .addOnLongClickListener(R.id.left_msg);
 
         }
         if(item.getType()==1){
@@ -30,7 +31,8 @@ public class ChatListAdapter extends BaseQuickAdapter<MsgDetailBean, BaseViewHol
             helper.setGone(R.id.left_area, false)
                     .setGone(R.id.right_area, true)
                     .setText(R.id.right_date, item.getDate())
-                    .setText(R.id.right_msg, item.getContent());
+                    .setText(R.id.right_msg, item.getContent())
+                    .addOnLongClickListener(R.id.right_msg);
         }
 
     }

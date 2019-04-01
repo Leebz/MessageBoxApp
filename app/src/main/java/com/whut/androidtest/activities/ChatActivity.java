@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.beardedhen.androidbootstrap.BootstrapEditText;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.R;
@@ -33,12 +34,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class ChatActivity extends AppCompatActivity {
     private ChatListAdapter mAdapter;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private TextView text_user_info;
-    private TextView text_input;
+    private BootstrapEditText text_input;
     private BootstrapButton btn_send;
     private String partner;
     private ArrayList<MsgDetailBean> data;
@@ -113,36 +116,38 @@ public class ChatActivity extends AppCompatActivity {
 
 
         mAdapter = new ChatListAdapter(R.layout.msg_detail_item, data);
-        recyclerView.setAdapter(mAdapter);
-//        recyclerView.smoothScrollToPosition();
-        recyclerView.scrollToPosition(data.size()-1);
-
-        mAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+        mAdapter.setOnItemChildLongClickListener(new BaseQuickAdapter.OnItemChildLongClickListener() {
             @Override
-            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
-                AlertDialog.Builder normalDialog = new AlertDialog.Builder(ChatActivity.this);
-                normalDialog.setTitle("警告");
-                normalDialog.setMessage("确定删除此消息吗?");
-                normalDialog.setPositiveButton("确定",
-                        new DialogInterface.OnClickListener() {
+            public boolean onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
+                new SweetAlertDialog(ChatActivity.this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("删除")
+                        .setContentText("确认删除此对话吗?")
+                        .setConfirmText("确认")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(ChatActivity.this, "POSITION"+position, Toast.LENGTH_SHORT).show();
-                                //...To-do
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                data.get(position).setState(-1);
+                                mAdapter.notifyDataSetChanged();
+                                //update local file
+
+                                sweetAlertDialog.dismissWithAnimation();
                             }
-                        });
-                normalDialog.setNegativeButton("关闭",
-                        new DialogInterface.OnClickListener() {
+                        })
+                        .setCancelText("取消")
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //...To-do
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismissWithAnimation();
                             }
-                        });
-                // 显示
-                normalDialog.show();
-                return true;
+                        })
+                        .show();
+                return false;
             }
         });
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.scrollToPosition(data.size()-1);
+
+
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,7 +169,8 @@ public class ChatActivity extends AppCompatActivity {
 
                 }
                 else{
-                    Toast.makeText(ChatActivity.this, "请输入消息内容", Toast.LENGTH_SHORT).show();
+                    text_input.setError("请输入消息内容");
+//                    Toast.makeText(ChatActivity.this, "请输入消息内容", Toast.LENGTH_SHORT).show();
                 }
             }
         });
