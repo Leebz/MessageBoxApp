@@ -35,7 +35,7 @@
             android:layout_marginLeft="10sp"
             android:text="备份到服务器"
             android:textColor="#000"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:gravity="center_vertical"/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -78,7 +78,7 @@
             android:layout_marginLeft="10dp"
             android:text="恢复数据"
             android:textColor="#000"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:gravity="center_vertical"/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -121,7 +121,7 @@
             android:layout_marginLeft="10dp"
             android:text="退出登录"
             android:textColor="#000"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:gravity="center_vertical"/>
         <LinearLayout
             android:layout_width="match_parent"

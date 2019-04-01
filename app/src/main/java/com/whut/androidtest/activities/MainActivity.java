@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
         String phoneNumber = text_phone.getText().toString();
         String password = text_psw.getText().toString();
         String res;
-        Log.d("AAA","点击");
+
         MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
         OkHttpClient okHttpClient = new OkHttpClient();
         RequestBody requestBody = new FormBody.Builder()

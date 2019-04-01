@@ -24,12 +24,10 @@
         <activity android:name=".activities.DialogListActivity"></activity>
         <activity android:name=".activities.checkFinger" />
         <activity android:name=".activities.SettingActivity" />
-        <activity android:name=".activities.MsgsListActivity" />
         <activity android:name=".BounceView" />
         <activity android:name=".activities.ChatActivity" />
         <activity android:name=".activities.RegisterAcitivity" />
         <activity android:name=".activities.EditMsgActivity" />
-        <activity android:name=".activities.MsgPreviewActivity" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

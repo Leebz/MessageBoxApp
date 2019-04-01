@@ -77,7 +77,7 @@ public class RegisterAcitivity extends AppCompatActivity {
                             Log.d("NETWORK",res);
                             JSONObject obj = JSON.parseObject(res);
                             if(obj.getInteger("code")==200){
-                                startActivity(new Intent(RegisterAcitivity.this, MsgPreviewActivity.class));
+                                startActivity(new Intent(RegisterAcitivity.this, DialogListActivity.class));
                             }
 
                         }

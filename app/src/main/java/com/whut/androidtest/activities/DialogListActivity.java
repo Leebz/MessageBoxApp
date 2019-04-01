@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -31,6 +32,17 @@ public class DialogListActivity extends AppCompatActivity {
     private ImageView imgSetting;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        //Read file and update UI
+        if(list!=null){
+            list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
+            mAdapter.setNewData(list);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -51,6 +63,7 @@ public class DialogListActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
+
         mAdapter = new DialogListAdapter(R.layout.msg_item, list);
         mAdapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
         recyclerView.setAdapter(mAdapter);
@@ -104,9 +117,13 @@ public class DialogListActivity extends AppCompatActivity {
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
                                 sweetAlertDialog.dismissWithAnimation();
+                                //update local file
+                                fileHelper.DeleteByPartner(list.get(position).getUsername());
                                 list.remove(position);
                                 mAdapter.notifyDataSetChanged();
-                                //update local file
+
+
+
 
 
                             }

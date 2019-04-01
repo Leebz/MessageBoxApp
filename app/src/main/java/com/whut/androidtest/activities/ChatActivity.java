@@ -26,6 +26,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.R;
 import com.whut.androidtest.adapter.ChatListAdapter;
+import com.whut.androidtest.util.FileHelper;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -45,6 +46,7 @@ public class ChatActivity extends AppCompatActivity {
     private BootstrapButton btn_send;
     private String partner;
     private ArrayList<MsgDetailBean> data;
+    private FileHelper fileHelper;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -100,6 +102,8 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_chat);
+        //init fileHelper
+        fileHelper = new FileHelper(ChatActivity.this);
         partner = getIntent().getExtras().getString("partner");
         text_user_info = findViewById(R.id.text_receiver);
         text_user_info.setText(partner);
@@ -129,7 +133,7 @@ public class ChatActivity extends AppCompatActivity {
                                 data.get(position).setState(-1);
                                 mAdapter.notifyDataSetChanged();
                                 //update local file
-
+                                fileHelper.WriteToFile(data);
                                 sweetAlertDialog.dismissWithAnimation();
                             }
                         })
