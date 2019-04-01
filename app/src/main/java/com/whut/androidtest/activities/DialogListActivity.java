@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -19,6 +20,7 @@ import com.whut.androidtest.R;
 import com.whut.androidtest.adapter.DialogListAdapter;
 import com.whut.androidtest.bean.MsgPreviewBean;
 import com.whut.androidtest.util.FileHelper;
+import com.xw.repo.widget.BounceScrollView;
 
 import java.util.List;
 
@@ -33,10 +35,13 @@ public class DialogListActivity extends AppCompatActivity {
     private FileHelper fileHelper;
     private FloatingActionButton fab;
     private ImageView imgSetting;
+    private BounceScrollView bounceScrollView;
+    private boolean IsEnterPrivateArea;
 
     @Override
     protected void onResume() {
         super.onResume();
+        IsEnterPrivateArea = false;
         //Read file and update UI
         if(list!=null){
             list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
@@ -50,7 +55,7 @@ public class DialogListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_dialog_list);
-
+        IsEnterPrivateArea = false;
         //get permission
         RxPermissions.getInstance(DialogListActivity.this)
                 .request(Manifest.permission.SEND_SMS,
@@ -149,6 +154,25 @@ public class DialogListActivity extends AppCompatActivity {
                         })
                         .show();
                 return false;
+            }
+        });
+        //add scroll event
+        bounceScrollView = findViewById(R.id.bounceView);
+        bounceScrollView.setOnScrollListener(new BounceScrollView.OnScrollListener() {
+            @Override
+            public void onScrolling(int i, int i1) {
+                Log.d("SCORO",i+"  "+i1);
+            }
+        });
+        bounceScrollView.setOnOverScrollListener(new BounceScrollView.OnOverScrollListener() {
+            @Override
+            public void onOverScrolling(boolean b, int i) {
+                Log.d("OVER",""+i);
+                if(IsEnterPrivateArea==false&&i>300){
+                    IsEnterPrivateArea = true;
+                    startActivity(new Intent(DialogListActivity.this, checkFinger.class));
+//                    finish();
+                }
             }
         });
 

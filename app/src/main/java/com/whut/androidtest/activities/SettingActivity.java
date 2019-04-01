@@ -85,7 +85,7 @@ public class SettingActivity extends AppCompatActivity {
                             .add("delete", jsonDelete)
                             .build();
                     Request request = new Request.Builder()
-                            .url("http://10.0.2.2/Android/backup.php")
+                            .url("http://116.62.247.192/Android/backup.php")
                             .post(requestBody)
                             .build();
                     okHttpClient.newCall(request).enqueue(new Callback() {
@@ -149,7 +149,7 @@ public class SettingActivity extends AppCompatActivity {
                         .add("host", host)
                         .build();
                 Request request = new Request.Builder()
-                        .url("http://10.0.2.2/Android/syn.php")
+                        .url("http://116.62.247.192/Android/syn.php")
                         .post(requestBody)
                         .build();
                 okHttpClient.newCall(request).enqueue(new Callback() {

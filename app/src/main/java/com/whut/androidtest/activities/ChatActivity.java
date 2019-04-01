@@ -152,7 +152,15 @@ public class ChatActivity extends AppCompatActivity {
                                 data.get(position).setState(-1);
                                 mAdapter.notifyDataSetChanged();
                                 //update local file
-                                fileHelper.WriteToFile(data);
+                                String id = data.get(position).getId();
+
+                                ArrayList<MsgDetailBean> msgs = fileHelper.ReadFromFile();
+                                for(MsgDetailBean msg : msgs){
+                                    if(msg.getId().equals(id)){
+                                        msg.setState(-1);
+                                    }
+                                }
+                                fileHelper.WriteToFile(msgs);
                                 sweetAlertDialog.dismissWithAnimation();
                             }
                         })

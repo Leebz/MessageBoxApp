@@ -1,6 +1,7 @@
 package com.whut.androidtest.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -62,7 +63,7 @@ public class RegisterAcitivity extends AppCompatActivity {
                             .add("psw",psw)
                             .build();
                     Request request = new Request.Builder()
-                            .url("http://10.0.2.2/Android/login.php")
+                            .url("http://116.62.247.192/Android/login.php")
                             .post(requestBody)
                             .build();
                     okHttpClient.newCall(request).enqueue(new Callback() {
@@ -77,6 +78,10 @@ public class RegisterAcitivity extends AppCompatActivity {
                             Log.d("NETWORK",res);
                             JSONObject obj = JSON.parseObject(res);
                             if(obj.getInteger("code")==200){
+                                SharedPreferences sp = getSharedPreferences("USERINFO",0);
+                                SharedPreferences.Editor editor = sp.edit();
+                                editor.putString("PHONE_NUM", phoneNumber);
+                                editor.commit();
                                 startActivity(new Intent(RegisterAcitivity.this, DialogListActivity.class));
                             }
 
