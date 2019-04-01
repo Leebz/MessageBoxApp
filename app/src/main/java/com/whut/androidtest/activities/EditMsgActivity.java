@@ -1,5 +1,6 @@
 package com.whut.androidtest.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.beardedhen.androidbootstrap.BootstrapEditText;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.R;
 
@@ -33,6 +35,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
+
+import rx.functions.Action1;
 
 public class EditMsgActivity extends AppCompatActivity{
     private ImageView btnContact;
@@ -47,6 +51,22 @@ public class EditMsgActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
 //        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_edit_msg);
+        RxPermissions.getInstance(EditMsgActivity.this)
+                .request(Manifest.permission.SEND_SMS,
+                        Manifest.permission.READ_SMS,
+                        Manifest.permission.RECEIVE_SMS,
+                        Manifest.permission.READ_CONTACTS)
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+                        if(aBoolean){
+                            Log.d("PERMISSION","OK");
+                        }
+                        else{
+                            Log.d("DENY","NMO");
+                        }
+                    }
+                });
 
         textReciver = findViewById(R.id.text_receiver);
         text_content = findViewById(R.id.text_content);

@@ -1,5 +1,6 @@
 package com.whut.androidtest.activities;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,7 @@ import android.view.Window;
 import android.widget.ImageView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whut.androidtest.R;
 import com.whut.androidtest.adapter.DialogListAdapter;
 import com.whut.androidtest.bean.MsgPreviewBean;
@@ -21,6 +23,7 @@ import com.whut.androidtest.util.FileHelper;
 import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import rx.functions.Action1;
 
 public class DialogListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -49,6 +52,22 @@ public class DialogListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dialog_list);
 
         //get permission
+        RxPermissions.getInstance(DialogListActivity.this)
+                .request(Manifest.permission.SEND_SMS,
+                        Manifest.permission.READ_SMS,
+                        Manifest.permission.RECEIVE_SMS,
+                        Manifest.permission.READ_CONTACTS)
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean aBoolean) {
+                        if(aBoolean){
+                            Log.d("PERMISSION","OK");
+                        }
+                        else{
+                            Log.d("DENY","NMO");
+                        }
+                    }
+                });
 
         //get host info
         SharedPreferences sp = getSharedPreferences("USERINFO",0);

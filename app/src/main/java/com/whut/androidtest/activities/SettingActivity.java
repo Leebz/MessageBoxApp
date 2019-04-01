@@ -1,5 +1,7 @@
 package com.whut.androidtest.activities;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -183,6 +185,18 @@ public class SettingActivity extends AppCompatActivity {
                     }
                 });
 
+            }
+        });
+
+        btn_exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = sp.edit();
+                editor.clear();
+                editor.commit();
+                startActivity(new Intent(SettingActivity.this, MainActivity.class));
+                
+                finish();
             }
         });
 
