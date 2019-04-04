@@ -60,7 +60,6 @@ public class ChatActivity extends AppCompatActivity {
                 Object[] smsObj = (Object[])bundle.get("pdus");
                 for(Object object:smsObj){
                     msg = SmsMessage.createFromPdu((byte[]) object);
-
                     Log.d("短信内容",msg.getOriginatingAddress()+" "+msg.getDisplayMessageBody());
                     //write to file
                     String uuid = UUID.randomUUID().toString().replaceAll("-","");
@@ -73,14 +72,8 @@ public class ChatActivity extends AppCompatActivity {
                         data.add(msgBean);
                         mAdapter.notifyDataSetChanged();
                     }
-
-
-
-
-
                 }
             }
-
         }
     };
 
@@ -195,7 +188,6 @@ public class ChatActivity extends AppCompatActivity {
                     WriteToFile(msg);
                     //redraw UI
                     mAdapter.notifyDataSetChanged();
-
                     text_input.setText("");
 
                 }
@@ -205,9 +197,6 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-
 
     }
     public void WriteToFile(MsgDetailBean entity){

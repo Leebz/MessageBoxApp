@@ -1,13 +1,17 @@
 package com.whut.androidtest.activities;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -18,11 +22,14 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whut.androidtest.R;
 import com.whut.androidtest.adapter.DialogListAdapter;
+import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.bean.MsgPreviewBean;
 import com.whut.androidtest.util.FileHelper;
 import com.xw.repo.widget.BounceScrollView;
 
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import rx.functions.Action1;
@@ -37,6 +44,13 @@ public class DialogListActivity extends AppCompatActivity {
     private ImageView imgSetting;
     private BounceScrollView bounceScrollView;
     private boolean IsEnterPrivateArea;
+    private BroadcastReceiver broadcastReceiver;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(broadcastReceiver);
+    }
 
     @Override
     protected void onResume() {
@@ -48,6 +62,9 @@ public class DialogListActivity extends AppCompatActivity {
             mAdapter.setNewData(list);
             mAdapter.notifyDataSetChanged();
         }
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        registerReceiver(broadcastReceiver, intentFilter);
     }
 
     @Override
@@ -56,6 +73,35 @@ public class DialogListActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_dialog_list);
         IsEnterPrivateArea = false;
+        //init fileHelper
+        fileHelper = new FileHelper(this);
+
+        //register broadercast
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle bundle = intent.getExtras();
+                SmsMessage msg = null;
+                if(bundle!=null){
+                    Object[] smsObj = (Object[])bundle.get("pdus");
+                    for(Object object:smsObj){
+                        msg = SmsMessage.createFromPdu((byte[]) object);
+
+                        Log.d("短信内容",msg.getOriginatingAddress()+" "+msg.getDisplayMessageBody());
+                        //write to file
+                        String uuid = UUID.randomUUID().toString().replaceAll("-","");
+
+                        MsgDetailBean msgBean = new MsgDetailBean(uuid,msg.getDisplayMessageBody(), 0,
+                                new Date().toLocaleString(),msg.getOriginatingAddress(),1);
+                        fileHelper.WriteToFile(msgBean);
+                        //update UI
+                        list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
+                        mAdapter.setNewData(list);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        };
         //get permission
         RxPermissions.getInstance(DialogListActivity.this)
                 .request(Manifest.permission.SEND_SMS,
@@ -77,9 +123,19 @@ public class DialogListActivity extends AppCompatActivity {
         //get host info
         SharedPreferences sp = getSharedPreferences("USERINFO",0);
         String host = sp.getString("PHONE_NUM","");
+        //first enter check
+        boolean is_first = sp.getBoolean("IS_FIRST", false);
+        if(is_first==false){
+            //first enter app ,read messagebox and write to local file
+            fileHelper.getSmsInPhone();
+            //write sp
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean("IS_FIRST",true);
+            editor.apply();
+            //check cloud file ,if cloud exist corresponding data ,notify user whether to syn them
 
-        //init fileHelper
-        fileHelper = new FileHelper(this);
+
+        }
 
         //init recyclerview
         recyclerView = findViewById(R.id.msgs_list);
@@ -161,7 +217,6 @@ public class DialogListActivity extends AppCompatActivity {
         bounceScrollView.setOnScrollListener(new BounceScrollView.OnScrollListener() {
             @Override
             public void onScrolling(int i, int i1) {
-                Log.d("SCORO",i+"  "+i1);
             }
         });
         bounceScrollView.setOnOverScrollListener(new BounceScrollView.OnOverScrollListener() {
