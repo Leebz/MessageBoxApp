@@ -42,7 +42,7 @@ public class SMSReceiver extends BroadcastReceiver{
                 String uuid = UUID.randomUUID().toString().replaceAll("-","");
 
                 MsgDetailBean msgBean = new MsgDetailBean(uuid, msg.getDisplayMessageBody(), 0,
-                        new Date().toLocaleString(),msg.getOriginatingAddress(),1);
+                        new Date().toLocaleString(),msg.getOriginatingAddress(),1,0);
 //                File file = new File(context.getFilesDir(), "data");
                 WriteToFile(msgBean, context);
 

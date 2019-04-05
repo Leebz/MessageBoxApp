@@ -85,7 +85,8 @@ public class SettingActivity extends AppCompatActivity {
                             .add("delete", jsonDelete)
                             .build();
                     Request request = new Request.Builder()
-                            .url("http://116.62.247.192/Android/backup.php")
+                            .url("http://10.0.2.2/Android/backup.php")
+//                            .url("http://116.62.247.192/Android/backup.php")
                             .post(requestBody)
                             .build();
                     okHttpClient.newCall(request).enqueue(new Callback() {
@@ -117,11 +118,11 @@ public class SettingActivity extends AppCompatActivity {
                                     }
 
                                     fileHelper.WriteToFile(msgs);
-                                    //printres
-                                ArrayList<MsgDetailBean> datas = fileHelper.ReadFromFile();
-                                for (MsgDetailBean data : datas) {
-                                    Log.d("DATA", data.getPartner() + "  state" + data.getState());
-                                }
+
+                                    ArrayList<MsgDetailBean> datas = fileHelper.ReadFromFile();
+                                    for (MsgDetailBean data : datas) {
+                                        Log.d("DATA", data.getPartner() + "  state" + data.getState());
+                                    }
 
 
                                 }
@@ -149,7 +150,8 @@ public class SettingActivity extends AppCompatActivity {
                         .add("host", host)
                         .build();
                 Request request = new Request.Builder()
-                        .url("http://116.62.247.192/Android/syn.php")
+//                        .url("http://116.62.247.192/Android/syn.php")
+                        .url("http://10.0.2.2/Android/syn.php")
                         .post(requestBody)
                         .build();
                 okHttpClient.newCall(request).enqueue(new Callback() {
@@ -175,8 +177,9 @@ public class SettingActivity extends AppCompatActivity {
                                 String partner = item.getString("partner");
                                 String time = item.getString("time");
                                 String state = item.getString("state");
+                                String isPrivate = item.getString("isPrivate");
 
-                                MsgDetailBean msg = new MsgDetailBean(local_id, content, Integer.parseInt(type), time, partner, Integer.parseInt(state));
+                                MsgDetailBean msg = new MsgDetailBean(local_id, content, Integer.parseInt(type), time, partner, Integer.parseInt(state),Integer.parseInt(isPrivate));
                                 msgs.add(msg);
 
                             }

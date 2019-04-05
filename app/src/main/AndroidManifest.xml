@@ -12,19 +12,19 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.WRITE_SMS" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    
-
 
     <application
         android:name=".MyActivityManager"
-        tools:replace="android:icon"
         android:allowBackup="true"
         android:icon="@drawable/launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
-        <activity android:name=".activities.DialogListActivity"></activity>
+        android:usesCleartextTraffic="true"
+        tools:replace="android:icon">
+        <activity android:name=".activities.PrivateChatActivity"></activity>
+        <activity android:name=".activities.PrivateDialogList" />
+        <activity android:name=".activities.DialogListActivity" />
         <activity android:name=".activities.checkFinger" />
         <activity android:name=".activities.SettingActivity" />
         <activity android:name=".BounceView" />

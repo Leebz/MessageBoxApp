@@ -92,7 +92,7 @@ public class DialogListActivity extends AppCompatActivity {
                         String uuid = UUID.randomUUID().toString().replaceAll("-","");
 
                         MsgDetailBean msgBean = new MsgDetailBean(uuid,msg.getDisplayMessageBody(), 0,
-                                new Date().toLocaleString(),msg.getOriginatingAddress(),1);
+                                new Date().toLocaleString(),msg.getOriginatingAddress(),1, 0);
                         fileHelper.WriteToFile(msgBean);
                         //update UI
                         list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
@@ -198,7 +198,7 @@ public class DialogListActivity extends AppCompatActivity {
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
                                 sweetAlertDialog.dismissWithAnimation();
                                 //update local file
-                                fileHelper.DeleteByPartner(list.get(position).getUsername());
+                                fileHelper.DeleteByPartner(list.get(position).getUsername(),0);
                                 list.remove(position);
                                 mAdapter.notifyDataSetChanged();
 
@@ -222,7 +222,6 @@ public class DialogListActivity extends AppCompatActivity {
         bounceScrollView.setOnOverScrollListener(new BounceScrollView.OnOverScrollListener() {
             @Override
             public void onOverScrolling(boolean b, int i) {
-                Log.d("OVER",""+i);
                 if(IsEnterPrivateArea==false&&i>300){
                     IsEnterPrivateArea = true;
                     startActivity(new Intent(DialogListActivity.this, checkFinger.class));

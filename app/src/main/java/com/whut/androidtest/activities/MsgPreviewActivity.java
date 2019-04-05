@@ -72,7 +72,7 @@ public class MsgPreviewActivity extends AppCompatActivity {
                     String uuid = UUID.randomUUID().toString().replaceAll("-","");
 
                     MsgDetailBean msgBean = new MsgDetailBean(uuid,msg.getDisplayMessageBody(), 0,
-                            new Date().toLocaleString(),msg.getOriginatingAddress(),1);
+                            new Date().toLocaleString(),msg.getOriginatingAddress(),1,0);
                     WriteToFile(msgBean);
                     //update UI
                     list = getPreviewData(castPreview(ReadFromFile()));

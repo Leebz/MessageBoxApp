@@ -2,6 +2,7 @@ package com.whut.androidtest.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.biometrics.BiometricPrompt;
 import android.os.Build;
 import android.os.CancellationSignal;
@@ -50,8 +51,7 @@ public class checkFinger extends AppCompatActivity {
             @Override
             public void onAuthenticationError(int errorCode, CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
-                startActivity(new Intent(checkFinger.this, DialogListActivity.class));
-                finish();
+
                 Log.i(TAG, "onAuthenticationError " + errString);
             }
 
@@ -59,12 +59,13 @@ public class checkFinger extends AppCompatActivity {
             public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 Log.i(TAG, "onAuthenticationSucceeded " + result.toString());
+                Intent intent = new Intent(checkFinger.this, PrivateDialogList.class);
+                startActivity(intent);
             }
 
             @Override
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
-
                 Log.i(TAG, "onAuthenticationFailed ");
             }
         };

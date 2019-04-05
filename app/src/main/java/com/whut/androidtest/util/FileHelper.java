@@ -98,12 +98,21 @@ public class FileHelper {
         //按照时间逆序 由新到旧输出
         for(int i=details.size()-1;i>=0;i--){
             MsgDetailBean msg = details.get(i);
-            if(msg.getState()!=-1){
+            if(msg.getState()!=-1&&msg.getIsPrivate()==0){
                 res.add(new MsgPreviewBean(msg.getPartner(),msg.getDate(),getPreviewContent(msg.getContent())));
             }
         }
-
-
+        return res;
+    }
+    public ArrayList<MsgPreviewBean> castPrivatePreview(ArrayList<MsgDetailBean> details){
+        ArrayList<MsgPreviewBean> res = new ArrayList<>();
+        //按照时间逆序 由新到旧输出
+        for(int i=details.size()-1;i>=0;i--){
+            MsgDetailBean msg = details.get(i);
+            if(msg.getState()!=-1&&msg.getIsPrivate()==1){
+                res.add(new MsgPreviewBean(msg.getPartner(),msg.getDate(),getPreviewContent(msg.getContent())));
+            }
+        }
         return res;
     }
     public String getPreviewContent(String content){
@@ -113,10 +122,11 @@ public class FileHelper {
         }
         return res;
     }
-    public void DeleteByPartner(String partner){
+    // 将需要删除的短信标记为-1
+    public void DeleteByPartner(String partner, int isPrivate){
         ArrayList<MsgDetailBean> res = ReadFromFile();
         for(MsgDetailBean msg : res){
-            if(msg.getPartner().equals(partner)){
+            if(msg.getPartner().equals(partner)&&msg.getIsPrivate()==isPrivate){
                 msg.setState(-1);
             }
         }
@@ -161,7 +171,7 @@ public class FileHelper {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                     Date d = new Date(longDate);
                     String strDate = dateFormat.format(d);
-                    MsgDetailBean msg = new MsgDetailBean(varid+"", strbody, intType, strDate, strAddress, 1);
+                    MsgDetailBean msg = new MsgDetailBean(varid+"", strbody, intType, strDate, strAddress, 1,0);
 //                    Log.d("MSG",varid+" "+intType+" "+"  "+strbody);
                     msgs.add(msg);
 
@@ -182,5 +192,25 @@ public class FileHelper {
         }catch(SQLiteException ex){
 
         }
+    }
+    public ArrayList<MsgDetailBean> getMsgList(String partner ,int isPrivate){
+        ArrayList<MsgDetailBean> originData = ReadFromFile();
+        ArrayList<MsgDetailBean> res = new ArrayList<>();
+        for(MsgDetailBean msg : originData){
+            if(msg.getPartner().equals(partner)&&msg.getIsPrivate()==isPrivate){
+                res.add(msg);
+            }
+        }
+
+        return res;
+    }
+    public String getPureNumber(String data){
+        String res = "";
+        for(int i=0;i<data.length();i++){
+            if(data.charAt(i)!=' '&&data.charAt(i)!='-'){
+                res += data.charAt(i);
+            }
+        }
+        return res;
     }
 }

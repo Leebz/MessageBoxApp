@@ -69,7 +69,7 @@ public class MsgsListActivity extends AppCompatActivity {
                     String uuid = UUID.randomUUID().toString().replaceAll("-","");
 
                     MsgDetailBean msgBean = new MsgDetailBean(uuid, msg.getDisplayMessageBody(), 0,
-                            new Date().toLocaleString(),msg.getOriginatingAddress(),1);
+                            new Date().toLocaleString(),msg.getOriginatingAddress(),1,0);
                     fileHelper.WriteToFile(msgBean);
                     //update UI
                     list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
@@ -183,7 +183,7 @@ public class MsgsListActivity extends AppCompatActivity {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                     Date d = new Date(longDate);
                     String strDate = dateFormat.format(d);
-                    MsgDetailBean msg = new MsgDetailBean(varid+"", strbody, intType, strDate, strAddress, 1);
+                    MsgDetailBean msg = new MsgDetailBean(varid+"", strbody, intType, strDate, strAddress, 1,0);
 //                    Log.d("MSG",varid+" "+intType+" "+"  "+strbody);
                     msgs.add(msg);
 

@@ -37,7 +37,8 @@ public class ChatListAdapter extends BaseQuickAdapter<MsgDetailBean, BaseViewHol
             }
         }
         else if(item.getState()==-1){
-            helper.setGone(R.id.msg_detail_item, false);
+            helper.setGone(R.id.left_area, false)
+                    .setGone(R.id.right_area, false);
         }
     }
 }

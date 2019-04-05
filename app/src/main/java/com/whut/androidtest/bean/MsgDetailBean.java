@@ -10,14 +10,16 @@ public class MsgDetailBean implements Serializable {
     private String date;
     private String partner;
     private int state;
+    private int isPrivate;
 
-    public MsgDetailBean(String id, String content, int type, String date, String partner, int state) {
+    public MsgDetailBean(String id, String content, int type, String date, String partner, int state, int isPrivate) {
         this.id = id;
         this.content = content;
         this.type = type;
         this.date = date;
         this.partner = partner;
         this.state = state;
+        this.isPrivate = isPrivate;
     }
 
     public String getId() {
@@ -67,4 +69,13 @@ public class MsgDetailBean implements Serializable {
     public void setDate(String date) {
         this.date = date;
     }
+
+    public int getIsPrivate() {
+        return isPrivate;
+    }
+
+    public void setIsPrivate(int isPrivate) {
+        this.isPrivate = isPrivate;
+    }
+
 }
