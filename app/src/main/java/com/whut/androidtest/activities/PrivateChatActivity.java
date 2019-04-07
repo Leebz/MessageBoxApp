@@ -64,7 +64,7 @@ public class PrivateChatActivity extends AppCompatActivity {
         mAdapter.setOnItemChildLongClickListener(new BaseQuickAdapter.OnItemChildLongClickListener() {
             @Override
             public boolean onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
-                String []options = {"删除短信","设为隐私短信"};
+                String []options = {"删除短信","取消隐私短信"};
                 AlertDialog.Builder builder = new AlertDialog.Builder(PrivateChatActivity.this);
                 builder.setItems(options, new DialogInterface.OnClickListener() {
                     @Override
@@ -109,6 +109,16 @@ public class PrivateChatActivity extends AppCompatActivity {
                                     .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                         @Override
                                         public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                            ArrayList<MsgDetailBean> msgs = fileHelper.ReadFromFile();
+                                            for(MsgDetailBean msg : msgs){
+                                                if(msg.getId().equals(data.get(position).getId())){
+                                                    msg.setIsPrivate(0);
+                                                }
+                                            }
+                                            fileHelper.WriteToFile(msgs);
+
+                                            data.remove(position);
+                                            mAdapter.notifyDataSetChanged();
 
                                         }
                                     })
@@ -141,7 +151,7 @@ public class PrivateChatActivity extends AppCompatActivity {
                     sms.sendTextMessage(partner,null,text_input.getText().toString(),pi,null);
                     //update local data file
                     String uuid = UUID.randomUUID().toString().replaceAll("-","");
-                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, new Date().toLocaleString(), fileHelper.getPureNumber(partner),1, 0);
+                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, new Date().toLocaleString(), fileHelper.getPureNumber(partner),1, 1);
                     data.add(msg);
                     fileHelper.WriteToFile(msg);
                     //redraw UI

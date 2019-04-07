@@ -68,7 +68,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     MsgDetailBean msgBean = new MsgDetailBean(uuid,msg.getDisplayMessageBody(), 0,
                             new Date().toLocaleString(),msg.getOriginatingAddress(),1, 0);
-                    WriteToFile(msgBean);
+                    fileHelper.WriteToFile(msgBean);
                     //update UI
                     if(partner.equals(msgBean.getPartner())){
                         data.add(msgBean);
@@ -130,7 +130,7 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        data = getMsgList(partner);
+        data = fileHelper.getMsgList(partner, 0);
 
 
         mAdapter = new ChatListAdapter(R.layout.msg_detail_item, data);
@@ -182,6 +182,18 @@ public class ChatActivity extends AppCompatActivity {
                                     .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                         @Override
                                         public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                            data.get(position).setIsPrivate(1);
+                                            ArrayList<MsgDetailBean> msgs = fileHelper.ReadFromFile();
+
+                                            for(MsgDetailBean msg:msgs){
+                                                if(msg.getId().equals(data.get(position).getId())){
+                                                    msg.setIsPrivate(1);
+                                                }
+                                            }
+                                            fileHelper.WriteToFile(msgs);
+                                            data.remove(position);
+                                            mAdapter.notifyDataSetChanged();
+                                            sweetAlertDialog.dismissWithAnimation();
 
                                         }
                                     })
@@ -214,9 +226,9 @@ public class ChatActivity extends AppCompatActivity {
                     sms.sendTextMessage(partner,null,text_input.getText().toString(),pi,null);
                     //update local data file
                     String uuid = UUID.randomUUID().toString().replaceAll("-","");
-                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, new Date().toLocaleString(), getPureNumber(partner),1, 0);
+                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, new Date().toLocaleString(), fileHelper.getPureNumber(partner),1, 0);
                     data.add(msg);
-                    WriteToFile(msg);
+                    fileHelper.WriteToFile(msg);
                     //redraw UI
                     mAdapter.notifyDataSetChanged();
                     text_input.setText("");
@@ -230,56 +242,4 @@ public class ChatActivity extends AppCompatActivity {
         });
 
     }
-    public void WriteToFile(MsgDetailBean entity){
-        try {
-
-            ArrayList<MsgDetailBean> list = ReadFromFile();
-            ObjectOutputStream oos = new ObjectOutputStream(this.openFileOutput("data", MODE_PRIVATE));
-            list.add(entity);
-            oos.writeObject(list);
-
-            oos.flush();
-            oos.close();
-            Log.d("WRITE",list.size()+"");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-    public ArrayList<MsgDetailBean> getMsgList(String partner){
-        ArrayList<MsgDetailBean> originData = ReadFromFile();
-        ArrayList<MsgDetailBean> res = new ArrayList<>();
-        for(MsgDetailBean msg : originData){
-            if(msg.getPartner().equals(partner)&&msg.getIsPrivate()==0){
-                res.add(msg);
-            }
-        }
-
-        return res;
-    }
-
-    public ArrayList<MsgDetailBean> ReadFromFile(){
-        ArrayList<MsgDetailBean> data = new ArrayList<>();
-        try {
-            ObjectInputStream ois = new ObjectInputStream(this.openFileInput("data"));
-            data = (ArrayList<MsgDetailBean>)ois.readObject();
-            ois.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return data;
-
-    }
-    public String getPureNumber(String data){
-        String res = "";
-        for(int i=0;i<data.length();i++){
-            if(data.charAt(i)!=' '&&data.charAt(i)!='-'){
-                res += data.charAt(i);
-            }
-        }
-        return res;
-    }
-
 }

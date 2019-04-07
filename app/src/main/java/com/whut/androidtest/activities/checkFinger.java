@@ -15,11 +15,14 @@ import android.widget.TextView;
 
 import com.whut.androidtest.R;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class checkFinger extends AppCompatActivity {
     private static final String TAG = "gryphon";
     private BiometricPrompt mBiometricPrompt;
     private CancellationSignal mCancellationSignal;
     private BiometricPrompt.AuthenticationCallback mAuthenticationCallback;
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -28,12 +31,13 @@ public class checkFinger extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_finger);
         mBiometricPrompt = new BiometricPrompt.Builder(this)
-                .setTitle("指纹验证")
-                .setDescription("描述")
+                .setTitle("隐私短信")
+                .setDescription("验证指纹以进入隐私短信")
                 .setNegativeButton("取消", getMainExecutor(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Log.i(TAG, "Cancel button clicked");
+                        finish();
                     }
                 })
                 .build();
@@ -61,11 +65,13 @@ public class checkFinger extends AppCompatActivity {
                 Log.i(TAG, "onAuthenticationSucceeded " + result.toString());
                 Intent intent = new Intent(checkFinger.this, PrivateDialogList.class);
                 startActivity(intent);
+                finish();
             }
 
             @Override
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
+
                 Log.i(TAG, "onAuthenticationFailed ");
             }
         };
