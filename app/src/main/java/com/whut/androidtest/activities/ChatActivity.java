@@ -67,13 +67,15 @@ public class ChatActivity extends AppCompatActivity {
                     String uuid = UUID.randomUUID().toString().replaceAll("-","");
 
                     MsgDetailBean msgBean = new MsgDetailBean(uuid,msg.getDisplayMessageBody(), 0,
-                            new Date().toLocaleString(),msg.getOriginatingAddress(),1, 0);
-                    fileHelper.WriteToFile(msgBean);
+                            new Date().toLocaleString(),msg.getOriginatingAddress(),1, 0 ,1);
                     //update UI
                     if(partner.equals(msgBean.getPartner())){
+                        msgBean.setIsRead(0);
                         data.add(msgBean);
                         mAdapter.notifyDataSetChanged();
                     }
+                    fileHelper.WriteToFile(msgBean);
+
                 }
             }
         }
@@ -131,6 +133,7 @@ public class ChatActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         data = fileHelper.getMsgList(partner, 0);
+        fileHelper.updateReadState(partner, 0);//update read state here
 
 
         mAdapter = new ChatListAdapter(R.layout.msg_detail_item, data);
@@ -226,7 +229,7 @@ public class ChatActivity extends AppCompatActivity {
                     sms.sendTextMessage(partner,null,text_input.getText().toString(),pi,null);
                     //update local data file
                     String uuid = UUID.randomUUID().toString().replaceAll("-","");
-                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, new Date().toLocaleString(), fileHelper.getPureNumber(partner),1, 0);
+                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, new Date().toLocaleString(), fileHelper.getPureNumber(partner),1, 0 ,0);
                     data.add(msg);
                     fileHelper.WriteToFile(msg);
                     //redraw UI

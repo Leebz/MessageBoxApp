@@ -11,8 +11,9 @@ public class MsgDetailBean implements Serializable {
     private String partner;
     private int state;
     private int isPrivate;
+    private int isRead;
 
-    public MsgDetailBean(String id, String content, int type, String date, String partner, int state, int isPrivate) {
+    public MsgDetailBean(String id, String content, int type, String date, String partner, int state, int isPrivate, int isRead) {
         this.id = id;
         this.content = content;
         this.type = type;
@@ -20,6 +21,7 @@ public class MsgDetailBean implements Serializable {
         this.partner = partner;
         this.state = state;
         this.isPrivate = isPrivate;
+        this.isRead = isRead;
     }
 
     public String getId() {
@@ -78,4 +80,11 @@ public class MsgDetailBean implements Serializable {
         this.isPrivate = isPrivate;
     }
 
+    public int getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(int isRead) {
+        this.isRead = isRead;
+    }
 }

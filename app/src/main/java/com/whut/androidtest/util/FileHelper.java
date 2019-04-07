@@ -32,12 +32,36 @@ public class FileHelper {
 
         //get preivew List
         for(MsgPreviewBean preview : originData){
+
             if(!partners.contains(preview.getUsername())){
                 partners.add(preview.getUsername());
                 res.add(preview);
             }
         }
 
+
+        return res;
+    }
+    public ArrayList<MsgPreviewBean> getDialogList(ArrayList<MsgDetailBean> msgs){
+        ArrayList<MsgPreviewBean> res = new ArrayList<>();
+        ArrayList<String> IsIn = new ArrayList<>();
+        for(int i=msgs.size()-1; i>=0;i--){
+            MsgDetailBean msg = msgs.get(i);
+            if(!IsIn.contains(msg.getPartner())){
+                IsIn.add(msg.getPartner());
+                MsgPreviewBean previewBean = new MsgPreviewBean(msg.getPartner(), msg.getDate(), getPreviewContent(msg.getContent()));
+                previewBean.setHasUnreadMsg(msg.getIsRead());
+                res.add(previewBean);
+
+            }
+            else if(IsIn.contains(msg.getPartner())&&msg.getIsRead()==1){
+                for(MsgPreviewBean msgPreviewBean : res ){
+                    if(msgPreviewBean.getUsername().equals(msg.getPartner())){
+                        msgPreviewBean.setHasUnreadMsg(1);
+                    }
+                }
+            }
+        }
 
         return res;
     }
@@ -99,7 +123,9 @@ public class FileHelper {
         for(int i=details.size()-1;i>=0;i--){
             MsgDetailBean msg = details.get(i);
             if(msg.getState()!=-1&&msg.getIsPrivate()==0){
-                res.add(new MsgPreviewBean(msg.getPartner(),msg.getDate(),getPreviewContent(msg.getContent())));
+                MsgPreviewBean msgPreviewBean = new MsgPreviewBean(msg.getPartner(),msg.getDate(),getPreviewContent(msg.getContent()));
+                msgPreviewBean.setHasUnreadMsg(msg.getIsRead());
+                res.add(msgPreviewBean);
             }
         }
         return res;
@@ -171,7 +197,7 @@ public class FileHelper {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                     Date d = new Date(longDate);
                     String strDate = dateFormat.format(d);
-                    MsgDetailBean msg = new MsgDetailBean(varid+"", strbody, intType, strDate, strAddress, 1,0);
+                    MsgDetailBean msg = new MsgDetailBean(varid+"", strbody, intType, strDate, strAddress, 1,0, 0);
 //                    Log.d("MSG",varid+" "+intType+" "+"  "+strbody);
                     msgs.add(msg);
 
@@ -203,6 +229,16 @@ public class FileHelper {
         }
 
         return res;
+    }
+    public void updateReadState(String partner, int isPrivate){
+        ArrayList<MsgDetailBean> list = ReadFromFile();
+        for(MsgDetailBean msg : list){
+            if(msg.getPartner().equals(partner)){
+                msg.setIsRead(0);
+            }
+        }
+        WriteToFile(list);
+
     }
     public String getPureNumber(String data){
         String res = "";

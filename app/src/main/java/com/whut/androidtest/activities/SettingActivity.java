@@ -178,8 +178,9 @@ public class SettingActivity extends AppCompatActivity {
                                 String time = item.getString("time");
                                 String state = item.getString("state");
                                 String isPrivate = item.getString("isPrivate");
+                                String isRead = item.getString("isRead");
 
-                                MsgDetailBean msg = new MsgDetailBean(local_id, content, Integer.parseInt(type), time, partner, Integer.parseInt(state),Integer.parseInt(isPrivate));
+                                MsgDetailBean msg = new MsgDetailBean(local_id, content, Integer.parseInt(type), time, partner, Integer.parseInt(state),Integer.parseInt(isPrivate), Integer.parseInt(isRead));
                                 msgs.add(msg);
 
                             }

@@ -19,6 +19,13 @@ public class DialogListAdapter extends BaseQuickAdapter<MsgPreviewBean, BaseView
 
     @Override
     protected void convert(BaseViewHolder helper, MsgPreviewBean item) {
+        if(item.getHasUnreadMsg()==0){
+            helper.setVisible(R.id.msg_item_isRead, false);
+        }
+        else{
+            helper.setVisible(R.id.msg_item_isRead, true);
+
+        }
         helper.setText(R.id.msg_item_name,item.getUsername())
                 .setText(R.id.msg_item_time,item.getDate())
                 .setText(R.id.msg_item_preview,item.getContent());

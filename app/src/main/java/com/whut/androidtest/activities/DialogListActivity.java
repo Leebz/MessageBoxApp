@@ -58,7 +58,8 @@ public class DialogListActivity extends AppCompatActivity {
         IsEnterPrivateArea = false;
         //Read file and update UI
         if(list!=null){
-            list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
+//            list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
+            list = fileHelper.getDialogList(fileHelper.ReadFromFile());
             mAdapter.setNewData(list);
             mAdapter.notifyDataSetChanged();
         }
@@ -92,10 +93,11 @@ public class DialogListActivity extends AppCompatActivity {
                         String uuid = UUID.randomUUID().toString().replaceAll("-","");
 
                         MsgDetailBean msgBean = new MsgDetailBean(uuid,msg.getDisplayMessageBody(), 0,
-                                new Date().toLocaleString(),msg.getOriginatingAddress(),1, 0);
+                                new Date().toLocaleString(),msg.getOriginatingAddress(),1, 0, 1);
                         fileHelper.WriteToFile(msgBean);
                         //update UI
-                        list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
+//                        list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
+                        list = fileHelper.getDialogList(fileHelper.ReadFromFile());
                         mAdapter.setNewData(list);
                         mAdapter.notifyDataSetChanged();
                     }
@@ -142,7 +144,8 @@ public class DialogListActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
+//        list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
+        list = fileHelper.getDialogList(fileHelper.ReadFromFile());
 
         mAdapter = new DialogListAdapter(R.layout.msg_item, list);
         mAdapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
@@ -170,6 +173,8 @@ public class DialogListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 //navigate to chat activity
+                //update read state
+
                 Intent intent = new Intent(DialogListActivity.this, ChatActivity.class);
                 intent.putExtra("partner",list.get(position).getUsername());
                 startActivity(intent);

@@ -98,7 +98,7 @@ public class EditMsgActivity extends AppCompatActivity{
                 //Update DB
                 String uuid = UUID.randomUUID().toString().replaceAll("-","");
                 Log.d("UUID",uuid);
-                MsgDetailBean msg = new MsgDetailBean(uuid, text_content.getText().toString(),1, new Date().toLocaleString(), getPureNumber(number),1,0 );
+                MsgDetailBean msg = new MsgDetailBean(uuid, text_content.getText().toString(),1, new Date().toLocaleString(), getPureNumber(number),1,0, 1);
 
                 WriteToFile(msg);
 
