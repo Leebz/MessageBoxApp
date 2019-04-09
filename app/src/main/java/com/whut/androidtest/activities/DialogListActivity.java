@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -227,6 +229,7 @@ public class DialogListActivity extends AppCompatActivity {
         bounceScrollView.setOnOverScrollListener(new BounceScrollView.OnOverScrollListener() {
             @Override
             public void onOverScrolling(boolean b, int i) {
+
                 if(IsEnterPrivateArea==false&&i>300){
                     IsEnterPrivateArea = true;
                     startActivity(new Intent(DialogListActivity.this, checkFinger.class));

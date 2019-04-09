@@ -191,6 +191,7 @@ public class ChatActivity extends AppCompatActivity {
                                             for(MsgDetailBean msg:msgs){
                                                 if(msg.getId().equals(data.get(position).getId())){
                                                     msg.setIsPrivate(1);
+                                                    msg.setState(2);
                                                 }
                                             }
                                             fileHelper.WriteToFile(msgs);

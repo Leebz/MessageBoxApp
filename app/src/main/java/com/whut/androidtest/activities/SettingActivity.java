@@ -64,6 +64,7 @@ public class SettingActivity extends AppCompatActivity {
                 }
                 ArrayList<MsgDetailBean> msgTobeSend = new ArrayList<>();
                 ArrayList<MsgDetailBean> msgTobeDelete =  new ArrayList<>();
+                ArrayList<MsgDetailBean> msgTobeModified =  new ArrayList<>();
                 for (MsgDetailBean msg : msgs) {
                     if (msg.getState() == 1) {
                         msgTobeSend.add(msg);
@@ -71,18 +72,24 @@ public class SettingActivity extends AppCompatActivity {
                     else if(msg.getState()==-1){
                         msgTobeDelete.add(msg);
                     }
+                    else if(msg.getState() == 2){
+                        msgTobeModified.add(msg);
+                    }
+
 
                 }
                 Toast.makeText(SettingActivity.this, "正在备份...", Toast.LENGTH_SHORT).show();
-                if (msgTobeSend.size() > 0||msgTobeDelete.size() > 0) {
+                if (msgTobeSend.size() > 0||msgTobeDelete.size() > 0||msgTobeModified.size()>0) {
                     String jsonStr = JSON.toJSONString(msgTobeSend);
                     String jsonDelete = JSON.toJSONString(msgTobeDelete);
-                    Log.d("JSON", "JSON  "+jsonDelete);
+                    String jsonModify = JSON.toJSONString(msgTobeModified);
+                    Log.d("JSON", "JSON  "+jsonModify);
                     OkHttpClient okHttpClient = new OkHttpClient();
                     RequestBody requestBody = new FormBody.Builder()
                             .add("host", host)
                             .add("data", jsonStr)
                             .add("delete", jsonDelete)
+                            .add("modify", jsonModify)
                             .build();
                     Request request = new Request.Builder()
                             .url("http://10.0.2.2/Android/backup.php")

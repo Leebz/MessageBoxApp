@@ -47,7 +47,7 @@ public class FileHelper {
         ArrayList<String> IsIn = new ArrayList<>();
         for(int i=msgs.size()-1; i>=0;i--){
             MsgDetailBean msg = msgs.get(i);
-            if(!IsIn.contains(msg.getPartner())){
+            if(!IsIn.contains(msg.getPartner())&&msg.getIsPrivate()==0){
                 IsIn.add(msg.getPartner());
                 MsgPreviewBean previewBean = new MsgPreviewBean(msg.getPartner(), msg.getDate(), getPreviewContent(msg.getContent()));
                 previewBean.setHasUnreadMsg(msg.getIsRead());
@@ -234,7 +234,11 @@ public class FileHelper {
         ArrayList<MsgDetailBean> list = ReadFromFile();
         for(MsgDetailBean msg : list){
             if(msg.getPartner().equals(partner)){
+                if(msg.getState()==0&&msg.getIsRead()==1){
+                    msg.setState(2);
+                }
                 msg.setIsRead(0);
+
             }
         }
         WriteToFile(list);
