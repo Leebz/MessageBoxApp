@@ -1,14 +1,21 @@
 package com.whut.androidtest.activities;
 
 import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,6 +36,7 @@ import com.whut.androidtest.bean.MsgPreviewBean;
 import com.whut.androidtest.util.FileHelper;
 import com.xw.repo.widget.BounceScrollView;
 
+import java.nio.channels.Channel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -83,6 +91,7 @@ public class DialogListActivity extends AppCompatActivity {
 
         //register broadercast
         broadcastReceiver = new BroadcastReceiver() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onReceive(Context context, Intent intent) {
                 Bundle bundle = intent.getExtras();
@@ -107,6 +116,27 @@ public class DialogListActivity extends AppCompatActivity {
                         list = fileHelper.getDialogList(fileHelper.ReadFromFile(), DialogListActivity.this);
                         mAdapter.setNewData(list);
                         mAdapter.notifyDataSetChanged();
+                        //make notification
+                        String user = fileHelper.getCorrespondingContact(msg.getOriginatingAddress());
+                        String notificationBody = fileHelper.getPreviewContent(msg.getDisplayMessageBody());
+                        NotificationChannel notificationChannel = new NotificationChannel("yunxin","新短信", NotificationManager.IMPORTANCE_HIGH);
+                        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+                        notificationManager.createNotificationChannel(notificationChannel);
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(DialogListActivity.this,"yunxin")
+                                .setSmallIcon(R.drawable.launcher)
+                                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.launcher))
+                                .setAutoCancel(true)
+                                .setContentTitle(user)
+                                .setContentText(notificationBody);
+                        Intent resultIntent = new Intent(DialogListActivity.this, ChatActivity.class);
+                        resultIntent.putExtra("partner","10010");
+                        TaskStackBuilder stackBuilder = TaskStackBuilder.create(DialogListActivity.this);
+                        stackBuilder.addParentStack(ChatActivity.class);
+                        stackBuilder.addNextIntent(resultIntent);
+                        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                        builder.setContentIntent(resultPendingIntent);
+                        notificationManager.notify(123,builder.build());
+
                     }
                 }
             }
@@ -161,8 +191,10 @@ public class DialogListActivity extends AppCompatActivity {
         //add fab click event
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+
                 startActivity(new Intent(DialogListActivity.this, EditMsgActivity.class));
             }
         });

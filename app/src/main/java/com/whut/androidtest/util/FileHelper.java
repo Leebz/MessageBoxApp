@@ -44,6 +44,22 @@ public class FileHelper {
 
         return res;
     }
+    public String getCorrespondingContact(String number){
+        String res = "";
+        boolean hasContact = false;
+        HashMap<String,String> contacts = readContacts(context);
+
+        if(contacts.containsKey(number)){
+            res = contacts.get(number);
+            hasContact = true;
+
+        }
+        if(!hasContact){
+            res = number;
+        }
+
+        return res;
+    }
     public ArrayList<MsgPreviewBean> getDialogList(ArrayList<MsgDetailBean> msgs, Context context){
         ArrayList<MsgPreviewBean> res = new ArrayList<>();
         ArrayList<String> IsIn = new ArrayList<>();
@@ -52,17 +68,8 @@ public class FileHelper {
         for(int i=msgs.size()-1; i>=0;i--){
             MsgDetailBean msg = msgs.get(i);
             if(!IsIn.contains(msg.getPartner())&&msg.getIsPrivate()==0&&msg.getState()!=-1){
-                String username = "";
-                boolean hasContact = false;
                 IsIn.add(msg.getPartner());
-                if(contacts.containsKey(msg.getPartner())){
-                    username = contacts.get(msg.getPartner());
-                    hasContact = true;
-
-                }
-                if(hasContact==false){
-                    username = msg.getPartner();
-                }
+                String username = getCorrespondingContact(msg.getPartner());
                 MsgPreviewBean previewBean = new MsgPreviewBean(username, msg.getPartner(), msg.getDate(), getPreviewContent(msg.getContent()));
                 previewBean.setHasUnreadMsg(msg.getIsRead());
                 res.add(previewBean);
