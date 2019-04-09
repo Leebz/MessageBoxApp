@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.whut.androidtest.bean.MsgDetailBean;
@@ -19,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 
 public class FileHelper {
     private Context context;
@@ -42,14 +44,26 @@ public class FileHelper {
 
         return res;
     }
-    public ArrayList<MsgPreviewBean> getDialogList(ArrayList<MsgDetailBean> msgs){
+    public ArrayList<MsgPreviewBean> getDialogList(ArrayList<MsgDetailBean> msgs, Context context){
         ArrayList<MsgPreviewBean> res = new ArrayList<>();
         ArrayList<String> IsIn = new ArrayList<>();
+        HashMap<String,String> contacts = readContacts(context);
+
         for(int i=msgs.size()-1; i>=0;i--){
             MsgDetailBean msg = msgs.get(i);
             if(!IsIn.contains(msg.getPartner())&&msg.getIsPrivate()==0&&msg.getState()!=-1){
+                String username = "";
+                boolean hasContact = false;
                 IsIn.add(msg.getPartner());
-                MsgPreviewBean previewBean = new MsgPreviewBean(msg.getPartner(), msg.getDate(), getPreviewContent(msg.getContent()));
+                if(contacts.containsKey(msg.getPartner())){
+                    username = contacts.get(msg.getPartner());
+                    hasContact = true;
+
+                }
+                if(hasContact==false){
+                    username = msg.getPartner();
+                }
+                MsgPreviewBean previewBean = new MsgPreviewBean(username, msg.getPartner(), msg.getDate(), getPreviewContent(msg.getContent()));
                 previewBean.setHasUnreadMsg(msg.getIsRead());
                 res.add(previewBean);
 
@@ -117,26 +131,13 @@ public class FileHelper {
         return data;
 
     }
-    public ArrayList<MsgPreviewBean> castPreview(ArrayList<MsgDetailBean> details){
-        ArrayList<MsgPreviewBean> res = new ArrayList<>();
-        //按照时间逆序 由新到旧输出
-        for(int i=details.size()-1;i>=0;i--){
-            MsgDetailBean msg = details.get(i);
-            if(msg.getState()!=-1&&msg.getIsPrivate()==0){
-                MsgPreviewBean msgPreviewBean = new MsgPreviewBean(msg.getPartner(),msg.getDate(),getPreviewContent(msg.getContent()));
-                msgPreviewBean.setHasUnreadMsg(msg.getIsRead());
-                res.add(msgPreviewBean);
-            }
-        }
-        return res;
-    }
     public ArrayList<MsgPreviewBean> castPrivatePreview(ArrayList<MsgDetailBean> details){
         ArrayList<MsgPreviewBean> res = new ArrayList<>();
         //按照时间逆序 由新到旧输出
         for(int i=details.size()-1;i>=0;i--){
             MsgDetailBean msg = details.get(i);
             if(msg.getState()!=-1&&msg.getIsPrivate()==1){
-                res.add(new MsgPreviewBean(msg.getPartner(),msg.getDate(),getPreviewContent(msg.getContent())));
+                res.add(new MsgPreviewBean(msg.getPartner(),msg.getPartner(),msg.getDate(),getPreviewContent(msg.getContent())));
             }
         }
         return res;
@@ -252,5 +253,41 @@ public class FileHelper {
             }
         }
         return res;
+    }
+    public HashMap<String,String> readContacts(Context context){
+        HashMap<String, String> res = new HashMap<>();
+        Cursor cursor = null;
+        try{
+            cursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+            if(cursor!=null){
+                while (cursor.moveToNext()){
+                    String displayname = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                    String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    Log.d("CONTACTS",displayname+"  "+getNumber(number));
+
+                    res.put(getNumber(number), displayname);
+
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(cursor==null){
+                cursor.close();
+            }
+        }
+
+        return  res;
+    }
+    public String getNumber(String data){
+        StringBuffer sb = new StringBuffer();
+        for(int i=0;i<data.length();i++){
+            if(data.charAt(i)<='9'&&data.charAt(i)>='0'){
+                sb.append(data.charAt(i));
+            }
+        }
+
+        return sb.toString();
     }
 }

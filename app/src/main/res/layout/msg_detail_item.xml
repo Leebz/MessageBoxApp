@@ -60,10 +60,8 @@
                 android:layout_gravity="start"
                 android:textAlignment="textStart"
                 android:text="这是短信内容长度测试这是短信内容长度测试这是短信内容长度测试这是短信内容长度测试这是短信内容长度测试"
-                app:bootstrapBrand="success"
                 app:bootstrapHeading="h5"
-
-
+                app:bootstrapBrand="regular"
                 />
 
         </LinearLayout>

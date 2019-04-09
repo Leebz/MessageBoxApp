@@ -37,6 +37,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -55,7 +56,6 @@ public class ChatActivity extends AppCompatActivity {
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("RECEIVE","短信类了");
             Bundle bundle = intent.getExtras();
             SmsMessage msg = null;
             if(bundle!=null){
@@ -122,7 +122,15 @@ public class ChatActivity extends AppCompatActivity {
         fileHelper = new FileHelper(ChatActivity.this);
         partner = getIntent().getExtras().getString("partner");
         text_user_info = findViewById(R.id.text_receiver);
-        text_user_info.setText(partner);
+        //get corresponding name
+        HashMap<String, String> contacts = fileHelper.readContacts(this);
+        if(contacts.containsKey(partner)){
+            text_user_info.setText(contacts.get(partner));
+        }
+        else {
+            text_user_info.setText(partner);
+        }
+
         text_input = findViewById(R.id.text_input);
         btn_send = findViewById(R.id.btn_send);
 

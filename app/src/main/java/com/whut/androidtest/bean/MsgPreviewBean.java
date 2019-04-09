@@ -4,12 +4,14 @@ public class MsgPreviewBean {
     private String username;
     private String date;
     private String content;
-    private int hasUnreadMsg = 0;
+    private int hasUnreadMsg;
+    private String phonenumber;
 
-    public MsgPreviewBean(String username, String date, String content) {
+    public MsgPreviewBean(String username,String phonenumber, String date, String content) {
         this.username = username;
         this.date = date;
         this.content = content;
+        this.phonenumber = phonenumber;
     }
 
     public String getUsername() {
@@ -42,5 +44,13 @@ public class MsgPreviewBean {
 
     public void setHasUnreadMsg(int hasUnreadMsg) {
         this.hasUnreadMsg = hasUnreadMsg;
+    }
+
+    public String getPhonenumber() {
+        return phonenumber;
+    }
+
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
     }
 }

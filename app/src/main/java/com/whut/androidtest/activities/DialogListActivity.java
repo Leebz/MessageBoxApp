@@ -62,7 +62,7 @@ public class DialogListActivity extends AppCompatActivity {
         //Read file and update UI
         if(list!=null){
 //            list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
-            list = fileHelper.getDialogList(fileHelper.ReadFromFile());
+            list = fileHelper.getDialogList(fileHelper.ReadFromFile(),this);
             mAdapter.setNewData(list);
             mAdapter.notifyDataSetChanged();
         }
@@ -79,6 +79,7 @@ public class DialogListActivity extends AppCompatActivity {
         IsEnterPrivateArea = false;
         //init fileHelper
         fileHelper = new FileHelper(this);
+        fileHelper.readContacts(this);
 
         //register broadercast
         broadcastReceiver = new BroadcastReceiver() {
@@ -103,7 +104,7 @@ public class DialogListActivity extends AppCompatActivity {
                         fileHelper.WriteToFile(msgBean);
                         //update UI
 //                        list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
-                        list = fileHelper.getDialogList(fileHelper.ReadFromFile());
+                        list = fileHelper.getDialogList(fileHelper.ReadFromFile(), DialogListActivity.this);
                         mAdapter.setNewData(list);
                         mAdapter.notifyDataSetChanged();
                     }
@@ -151,7 +152,7 @@ public class DialogListActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 //        list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
-        list = fileHelper.getDialogList(fileHelper.ReadFromFile());
+        list = fileHelper.getDialogList(fileHelper.ReadFromFile(),this);
 
         mAdapter = new DialogListAdapter(R.layout.msg_item, list);
         mAdapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
@@ -182,7 +183,7 @@ public class DialogListActivity extends AppCompatActivity {
                 //update read state
 
                 Intent intent = new Intent(DialogListActivity.this, ChatActivity.class);
-                intent.putExtra("partner",list.get(position).getUsername());
+                intent.putExtra("partner",list.get(position).getPhonenumber());
                 startActivity(intent);
             }
         });
@@ -209,14 +210,9 @@ public class DialogListActivity extends AppCompatActivity {
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
                                 sweetAlertDialog.dismissWithAnimation();
                                 //update local file
-                                fileHelper.DeleteByPartner(list.get(position).getUsername(),0);
+                                fileHelper.DeleteByPartner(list.get(position).getPhonenumber(),0);
                                 list.remove(position);
                                 mAdapter.notifyDataSetChanged();
-
-
-
-
-
                             }
                         })
                         .show();
@@ -239,6 +235,7 @@ public class DialogListActivity extends AppCompatActivity {
                     startActivity(new Intent(DialogListActivity.this, checkFinger.class));
 //                    finish();
                 }
+
             }
         });
 

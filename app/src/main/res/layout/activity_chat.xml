@@ -7,23 +7,21 @@
     android:orientation="vertical"
     tools:context=".activities.ChatActivity"
     android:id="@+id/activity_chat"
-    android:background="#fff">
+    android:background="#FFF">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="#A2B5CD">
         <TextView
             android:id="@+id/text_receiver"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="RECEIVER"
-            android:textColor="#000"
+            android:textColor="#FFF"
             android:textSize="24sp"
             android:textAlignment="center"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="3dp"/>
+            android:layout_margin="10dp"/>
         <!--<TextView-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="wrap_content"-->
@@ -35,7 +33,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/bootstrap_gray"
+        android:background="#858585"
         android:layout_marginTop="3dp"
         />
 
