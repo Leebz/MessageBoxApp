@@ -29,6 +29,7 @@ import com.whut.androidtest.bean.MsgPreviewBean;
 import com.whut.androidtest.util.FileHelper;
 import com.xw.repo.widget.BounceScrollView;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -93,9 +94,12 @@ public class DialogListActivity extends AppCompatActivity {
                         Log.d("短信内容",msg.getOriginatingAddress()+" "+msg.getDisplayMessageBody());
                         //write to file
                         String uuid = UUID.randomUUID().toString().replaceAll("-","");
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                        Date d = new Date();
+                        String strDate = dateFormat.format(d);
 
                         MsgDetailBean msgBean = new MsgDetailBean(uuid,msg.getDisplayMessageBody(), 0,
-                                new Date().toLocaleString(),msg.getOriginatingAddress(),1, 0, 1);
+                                strDate,msg.getOriginatingAddress(),1, 0, 1);
                         fileHelper.WriteToFile(msgBean);
                         //update UI
 //                        list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));

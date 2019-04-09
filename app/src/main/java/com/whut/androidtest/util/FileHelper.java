@@ -47,14 +47,14 @@ public class FileHelper {
         ArrayList<String> IsIn = new ArrayList<>();
         for(int i=msgs.size()-1; i>=0;i--){
             MsgDetailBean msg = msgs.get(i);
-            if(!IsIn.contains(msg.getPartner())&&msg.getIsPrivate()==0){
+            if(!IsIn.contains(msg.getPartner())&&msg.getIsPrivate()==0&&msg.getState()!=-1){
                 IsIn.add(msg.getPartner());
                 MsgPreviewBean previewBean = new MsgPreviewBean(msg.getPartner(), msg.getDate(), getPreviewContent(msg.getContent()));
                 previewBean.setHasUnreadMsg(msg.getIsRead());
                 res.add(previewBean);
 
             }
-            else if(IsIn.contains(msg.getPartner())&&msg.getIsRead()==1){
+            else if(IsIn.contains(msg.getPartner())&&msg.getIsRead()==1&&msg.getIsPrivate()==0&&msg.getState()!=-1){
                 for(MsgPreviewBean msgPreviewBean : res ){
                     if(msgPreviewBean.getUsername().equals(msg.getPartner())){
                         msgPreviewBean.setHasUnreadMsg(1);
