@@ -44,13 +44,13 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import rx.functions.Action1;
 
 public class ChatActivity extends AppCompatActivity {
-    private ChatListAdapter mAdapter;
+    public static ChatListAdapter mAdapter;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private TextView text_user_info;
     private BootstrapEditText text_input;
     private BootstrapButton btn_send;
-    private String partner;
+    public static String partner;
     private ArrayList<MsgDetailBean> data;
     private FileHelper fileHelper;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -88,13 +88,13 @@ public class ChatActivity extends AppCompatActivity {
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
-        registerReceiver(broadcastReceiver, intentFilter);
+//        registerReceiver(broadcastReceiver, intentFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(broadcastReceiver);
+//        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -161,10 +161,10 @@ public class ChatActivity extends AppCompatActivity {
                                     .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                         @Override
                                         public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                            data.get(position).setState(-1);
+                                            String id = data.get(position).getId();
+                                            data.remove(position);
                                             mAdapter.notifyDataSetChanged();
                                             //update local file
-                                            String id = data.get(position).getId();
 
                                             ArrayList<MsgDetailBean> msgs = fileHelper.ReadFromFile();
                                             for(MsgDetailBean msg : msgs){
@@ -173,7 +173,13 @@ public class ChatActivity extends AppCompatActivity {
                                                 }
                                             }
                                             fileHelper.WriteToFile(msgs);
-                                            sweetAlertDialog.dismissWithAnimation();
+
+
+                                            sweetAlertDialog.dismiss();
+                                            if(data.size()==0){
+                                                startActivity(new Intent(ChatActivity.this, DialogListActivity.class));
+                                                finish();
+                                            }
                                         }
                                     })
                                     .setCancelText("取消")

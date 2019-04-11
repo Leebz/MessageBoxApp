@@ -60,14 +60,14 @@ public class FileHelper {
 
         return res;
     }
-    public ArrayList<MsgPreviewBean> getDialogList(ArrayList<MsgDetailBean> msgs, Context context){
+    public ArrayList<MsgPreviewBean> getDialogList(ArrayList<MsgDetailBean> msgs, Context context, int isPrivate){
         ArrayList<MsgPreviewBean> res = new ArrayList<>();
         ArrayList<String> IsIn = new ArrayList<>();
         HashMap<String,String> contacts = readContacts(context);
 
         for(int i=msgs.size()-1; i>=0;i--){
             MsgDetailBean msg = msgs.get(i);
-            if(!IsIn.contains(msg.getPartner())&&msg.getIsPrivate()==0&&msg.getState()!=-1){
+            if(!IsIn.contains(msg.getPartner())&&msg.getIsPrivate()==isPrivate&&msg.getState()!=-1){
                 IsIn.add(msg.getPartner());
                 String username = getCorrespondingContact(msg.getPartner());
                 MsgPreviewBean previewBean = new MsgPreviewBean(username, msg.getPartner(), msg.getDate(), getPreviewContent(msg.getContent()));
@@ -75,7 +75,7 @@ public class FileHelper {
                 res.add(previewBean);
 
             }
-            else if(IsIn.contains(msg.getPartner())&&msg.getIsRead()==1&&msg.getIsPrivate()==0&&msg.getState()!=-1){
+            else if(IsIn.contains(msg.getPartner())&&msg.getIsRead()==1&&msg.getIsPrivate()==isPrivate&&msg.getState()!=-1){
                 for(MsgPreviewBean msgPreviewBean : res ){
                     if(msgPreviewBean.getUsername().equals(msg.getPartner())){
                         msgPreviewBean.setHasUnreadMsg(1);
@@ -94,7 +94,7 @@ public class FileHelper {
             oos.writeObject(msgs);
             oos.flush();
             oos.close();
-//            Log.d("WRITE",list.size()+"");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -108,7 +108,6 @@ public class FileHelper {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             list.add(entity);
             oos.writeObject(list);
-
             oos.flush();
             oos.close();
 
@@ -127,9 +126,7 @@ public class FileHelper {
             data = (ArrayList<MsgDetailBean>)ois.readObject();
             ois.close();
             Log.d("FILE",data.size()+"");
-            for(int i=0;i<data.size();i++){
-                Log.d("LISTDATA",data.get(i).getId()+" "+data.get(i).getContent()+"  "+data.get(i).getState());
-            }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -270,7 +267,6 @@ public class FileHelper {
                 while (cursor.moveToNext()){
                     String displayname = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                     String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    Log.d("CONTACTS",displayname+"  "+getNumber(number));
 
                     res.put(getNumber(number), displayname);
 

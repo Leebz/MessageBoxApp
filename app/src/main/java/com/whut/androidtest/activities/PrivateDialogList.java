@@ -38,7 +38,7 @@ public class PrivateDialogList extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         //init data
-        list = fileHelper.getPreviewData(fileHelper.castPrivatePreview(fileHelper.ReadFromFile()));
+        list = fileHelper.getDialogList(fileHelper.ReadFromFile(),this,1);
 
         adapter = new DialogListAdapter(R.layout.msg_item, list);
         adapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);

@@ -5,34 +5,60 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/timg">
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/launcher"
+        android:layout_gravity="center"
+        android:layout_marginTop="100dp"/>
 
     <LinearLayout
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="100dp"
-        android:paddingHorizontal="16dp">
-
-        <EditText
+        android:paddingHorizontal="16dp"
+        android:layout_marginVertical="30dp">
+        <com.beardedhen.androidbootstrap.BootstrapEditText
             android:id="@+id/phoneNumText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="手机号码"
-            android:inputType="textPersonName"
-            android:textColorLink="@color/bootstrap_brand_info"
-            android:textSize="18sp" />
-
-        <EditText
+            app:roundedCorners="true"
+            android:hint="手机号"
+            android:maxLines="1"
+            android:layout_marginVertical="10dp"
+            app:bootstrapSize="lg"
+            />
+        <com.beardedhen.androidbootstrap.BootstrapEditText
             android:id="@+id/psw_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
+            app:roundedCorners="true"
             android:hint="密码"
+            android:maxLines="1"
+            app:bootstrapSize="lg"
             android:inputType="textPassword"
-            android:textColorLink="@color/bootstrap_brand_secondary_fill" />
+            />
+        <!--<EditText-->
+            <!--android:id="@+id/phoneNumText"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:ems="10"-->
+            <!--android:hint="手机号码"-->
+            <!--android:inputType="textPersonName"-->
+            <!--android:textColorLink="@color/bootstrap_brand_info"-->
+            <!--android:textSize="18sp" />-->
+
+        <!--<EditText-->
+            <!--android:id="@+id/psw_text"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:ems="10"-->
+            <!--android:hint="密码"-->
+            <!--android:inputType="textPassword"-->
+            <!--android:textColorLink="@color/bootstrap_brand_secondary_fill" />-->
 
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/btn_login"

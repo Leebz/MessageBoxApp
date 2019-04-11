@@ -48,14 +48,26 @@
         </LinearLayout>
 
 
-        <SearchView
-            android:id="@+id/main_search"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:queryHint="搜索短信">
+        <!--<SearchView-->
+            <!--android:id="@+id/msg_search"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_margin="10dp"-->
+            <!--android:queryHint="搜索短信">-->
 
-        </SearchView>
+        <!--</SearchView>-->
+        <android.support.v7.widget.SearchView
+            android:id="@+id/msg_search"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            app:iconifiedByDefault="false"
+            app:queryBackground="@null"
+            app:queryHint="搜索短信"
+            app:showDividers="none"
+            app:submitBackground="@null"
+            android:layout_margin="10dp"
+            android:background="@drawable/search_background"/>
+
 
         <com.xw.repo.widget.BounceScrollView
             android:id="@+id/bounceView"

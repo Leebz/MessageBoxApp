@@ -3,16 +3,16 @@
     <!-- 第一层阴影 -->
     <item>
         <shape>
-            <solid android:color="@android:color/darker_gray" />
+            <solid android:color="#757575" />
             <corners android:radius="8dp" />
         </shape>
     </item>
     <!--第二层前景 底偏移1dp -->
-    <item android:bottom="1dp" android:right="1dp"  >
+    <item android:bottom="1dp" android:right="1dp">
         <shape>
-            <solid android:color="@android:color/white" />
+
+            <solid android:color="#D1EEEE" />
             <corners android:radius="8dp" />
         </shape>
     </item>
-
 </layer-list>

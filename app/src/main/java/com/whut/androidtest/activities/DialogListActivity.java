@@ -20,10 +20,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -38,6 +40,7 @@ import com.xw.repo.widget.BounceScrollView;
 
 import java.nio.channels.Channel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -47,7 +50,7 @@ import rx.functions.Action1;
 
 public class DialogListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
-    private DialogListAdapter mAdapter;
+    public static DialogListAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private List<MsgPreviewBean> list;
     private FileHelper fileHelper;
@@ -56,11 +59,13 @@ public class DialogListActivity extends AppCompatActivity {
     private BounceScrollView bounceScrollView;
     private boolean IsEnterPrivateArea;
     private BroadcastReceiver broadcastReceiver;
+    private SearchView searchView;
+    private boolean isSearching;
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(broadcastReceiver);
+//        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -68,15 +73,16 @@ public class DialogListActivity extends AppCompatActivity {
         super.onResume();
         IsEnterPrivateArea = false;
         //Read file and update UI
-        if(list!=null){
+        Log.d("STRINGSS", "onResume:"+searchView.getQuery()+"isEQUAL: "+searchView.getQuery().equals(""));
+        if(list!=null&&searchView.getQuery().toString().equals("")){
 //            list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
-            list = fileHelper.getDialogList(fileHelper.ReadFromFile(),this);
+            list = fileHelper.getDialogList(fileHelper.ReadFromFile(),this, 0);
             mAdapter.setNewData(list);
             mAdapter.notifyDataSetChanged();
         }
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
-        registerReceiver(broadcastReceiver, intentFilter);
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+//        registerReceiver(broadcastReceiver, intentFilter);
     }
 
     @Override
@@ -89,58 +95,7 @@ public class DialogListActivity extends AppCompatActivity {
         fileHelper = new FileHelper(this);
         fileHelper.readContacts(this);
 
-        //register broadercast
-        broadcastReceiver = new BroadcastReceiver() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Bundle bundle = intent.getExtras();
-                SmsMessage msg = null;
-                if(bundle!=null){
-                    Object[] smsObj = (Object[])bundle.get("pdus");
-                    for(Object object:smsObj){
-                        msg = SmsMessage.createFromPdu((byte[]) object);
 
-                        Log.d("短信内容",msg.getOriginatingAddress()+" "+msg.getDisplayMessageBody());
-                        //write to file
-                        String uuid = UUID.randomUUID().toString().replaceAll("-","");
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                        Date d = new Date();
-                        String strDate = dateFormat.format(d);
-
-                        MsgDetailBean msgBean = new MsgDetailBean(uuid,msg.getDisplayMessageBody(), 0,
-                                strDate,msg.getOriginatingAddress(),1, 0, 1);
-                        fileHelper.WriteToFile(msgBean);
-                        //update UI
-//                        list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
-                        list = fileHelper.getDialogList(fileHelper.ReadFromFile(), DialogListActivity.this);
-                        mAdapter.setNewData(list);
-                        mAdapter.notifyDataSetChanged();
-                        //make notification
-                        String user = fileHelper.getCorrespondingContact(msg.getOriginatingAddress());
-                        String notificationBody = fileHelper.getPreviewContent(msg.getDisplayMessageBody());
-                        NotificationChannel notificationChannel = new NotificationChannel("yunxin","新短信", NotificationManager.IMPORTANCE_HIGH);
-                        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-                        notificationManager.createNotificationChannel(notificationChannel);
-                        NotificationCompat.Builder builder = new NotificationCompat.Builder(DialogListActivity.this,"yunxin")
-                                .setSmallIcon(R.drawable.launcher)
-                                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.launcher))
-                                .setAutoCancel(true)
-                                .setContentTitle(user)
-                                .setContentText(notificationBody);
-                        Intent resultIntent = new Intent(DialogListActivity.this, ChatActivity.class);
-                        resultIntent.putExtra("partner","10010");
-                        TaskStackBuilder stackBuilder = TaskStackBuilder.create(DialogListActivity.this);
-                        stackBuilder.addParentStack(ChatActivity.class);
-                        stackBuilder.addNextIntent(resultIntent);
-                        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-                        builder.setContentIntent(resultPendingIntent);
-                        notificationManager.notify(123,builder.build());
-
-                    }
-                }
-            }
-        };
         //get permission
         RxPermissions.getInstance(DialogListActivity.this)
                 .request(Manifest.permission.SEND_SMS,
@@ -182,7 +137,7 @@ public class DialogListActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 //        list = fileHelper.getPreviewData(fileHelper.castPreview(fileHelper.ReadFromFile()));
-        list = fileHelper.getDialogList(fileHelper.ReadFromFile(),this);
+        list = fileHelper.getDialogList(fileHelper.ReadFromFile(),this,0);
 
         mAdapter = new DialogListAdapter(R.layout.msg_item, list);
         mAdapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
@@ -270,6 +225,42 @@ public class DialogListActivity extends AppCompatActivity {
 
             }
         });
+
+        searchView = findViewById(R.id.msg_search);
+        searchView.setIconifiedByDefault(false);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if(imm!=null){
+                    imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
+                }
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                ArrayList<MsgDetailBean> msgs = fileHelper.ReadFromFile();
+                ArrayList<MsgDetailBean> res = new ArrayList<>();
+                isSearching = true;
+                for(MsgDetailBean msg : msgs){
+                    if(msg.getState()!=-1&&msg.getIsPrivate()==0){
+                        if(msg.getContent().contains(s)){
+                            res.add(msg);
+                        }
+
+                    }
+                }
+
+                mAdapter.setNewData(fileHelper.getDialogList(res,DialogListActivity.this, 0));
+                mAdapter.notifyDataSetChanged();
+
+                return true;
+            }
+        });
+
+
 
     }
 

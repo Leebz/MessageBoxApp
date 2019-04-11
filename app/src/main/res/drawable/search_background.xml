@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 第一层阴影 -->
+    <!--第二层前景 底偏移1dp -->
     <item>
         <shape>
-            <solid android:color="@android:color/darker_gray" />
-            <corners android:radius="8dp" />
-        </shape>
-    </item>
-    <!--第二层前景 底偏移1dp -->
-    <item android:bottom="1dp" android:right="1dp"  >
-        <shape>
-            <solid android:color="@android:color/white" />
+            <solid android:color="#DBDBDB" />
             <corners android:radius="8dp" />
         </shape>
     </item>

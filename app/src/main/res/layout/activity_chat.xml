@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".activities.ChatActivity"
-    android:id="@+id/activity_chat"
-    android:background="#FFF">
+    android:id="@+id/activity_chat">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
