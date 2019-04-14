@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,8 +23,10 @@ import com.whut.androidtest.util.FileHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.function.Predicate;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -37,6 +40,7 @@ public class SettingActivity extends AppCompatActivity {
     private LinearLayout btn_syn;
     private LinearLayout btn_exit;
     private FileHelper fileHelper = new FileHelper(this);
+    public static ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,7 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     public void init() {
+        progressBar = findViewById(R.id.progressBar);
         btn_upload = findViewById(R.id.btn_upload);
         btn_syn = findViewById(R.id.btn_syn);
         btn_exit = findViewById(R.id.btn_exit);
@@ -56,145 +61,17 @@ public class SettingActivity extends AppCompatActivity {
         btn_upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Toast.makeText(SettingActivity.this, "点击事件", Toast.LENGTH_SHORT).show();
-                ArrayList<MsgDetailBean> msgs = fileHelper.ReadFromFile();
-                for(int i=0;i<msgs.size();i++){
-                    Log.d("INFO",msgs.get(i).getId()+"  "+msgs.get(i).getContent()+"  "+msgs.get(i).getState());
+                fileHelper.backup(SettingActivity.this, host);
 
-                }
-                ArrayList<MsgDetailBean> msgTobeSend = new ArrayList<>();
-                ArrayList<MsgDetailBean> msgTobeDelete =  new ArrayList<>();
-                ArrayList<MsgDetailBean> msgTobeModified =  new ArrayList<>();
-                for (MsgDetailBean msg : msgs) {
-                    if (msg.getState() == 1) {
-                        msgTobeSend.add(msg);
-                    }
-                    else if(msg.getState()==-1){
-                        msgTobeDelete.add(msg);
-                    }
-                    else if(msg.getState() == 2){
-                        msgTobeModified.add(msg);
-                    }
-
-
-                }
-                Toast.makeText(SettingActivity.this, "正在备份...", Toast.LENGTH_SHORT).show();
-                if (msgTobeSend.size() > 0||msgTobeDelete.size() > 0||msgTobeModified.size()>0) {
-                    String jsonStr = JSON.toJSONString(msgTobeSend);
-                    String jsonDelete = JSON.toJSONString(msgTobeDelete);
-                    String jsonModify = JSON.toJSONString(msgTobeModified);
-                    Log.d("JSON", "JSON  "+jsonModify);
-                    OkHttpClient okHttpClient = new OkHttpClient();
-                    RequestBody requestBody = new FormBody.Builder()
-                            .add("host", host)
-                            .add("data", jsonStr)
-                            .add("delete", jsonDelete)
-                            .add("modify", jsonModify)
-                            .build();
-                    Request request = new Request.Builder()
-//                            .url("http://10.0.2.2/Android/backup.php")
-                            .url("http://116.62.247.192/Android/backup.php")
-                            .post(requestBody)
-                            .build();
-                    okHttpClient.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-
-                        }
-
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String res = response.body().string();
-                            Log.d("RES", res);
-                            try{
-                                JSONObject obj = JSON.parseObject(res);
-                                if (obj.getInteger("code") == 200) {
-                                    //update local file ,modify msgs state to 0
-                                    ArrayList<MsgDetailBean> msgs = fileHelper.ReadFromFile();
-                                    for (MsgDetailBean msg : msgs) {
-                                        if (msg.getState() == 1||msg.getState() == 2) {
-                                            msg.setState(0);
-                                        }
-
-                                    }
-                                    Iterator<MsgDetailBean> iterator = msgs.iterator();
-                                    while (iterator.hasNext()){
-                                        if(iterator.next().getState()==-1){
-                                            iterator.remove();
-                                        }
-                                    }
-
-                                    fileHelper.WriteToFile(msgs);
-
-                                    ArrayList<MsgDetailBean> datas = fileHelper.ReadFromFile();
-                                    for (MsgDetailBean data : datas) {
-                                        Log.d("DATA", data.getPartner() + "  state" + data.getState());
-                                    }
-
-
-                                }
-                                if(obj.getInteger("code")==400){
-                                    Toast.makeText(SettingActivity.this, "WRONG", Toast.LENGTH_SHORT).show();
-                                }
-
-                            }catch (Exception e){
-
-                            }
-                        }
-
-                    });
-                }
             }
         });
 
         btn_syn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(SettingActivity.this, "数据同步中", Toast.LENGTH_SHORT).show();
-                //send post request
-                OkHttpClient okHttpClient = new OkHttpClient();
-                RequestBody requestBody = new FormBody.Builder()
-                        .add("host", host)
-                        .build();
-                Request request = new Request.Builder()
-                        .url("http://116.62.247.192/Android/syn.php")
-//                        .url("http://10.0.2.2/Android/syn.php")
-                        .post(requestBody)
-                        .build();
-                okHttpClient.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
 
-                    }
+                fileHelper.syn(SettingActivity.this, host);
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        String res = response.body().string();
-                        Log.d("SYNRES",res);
-                        JSONObject obj = JSON.parseObject(res);
-                        if(obj.getInteger("code")==200){
-                            JSONArray array = obj.getJSONArray("data");
-                            Log.d("DATASIZE",array.size()+" ");
-                            ArrayList<MsgDetailBean> msgs = new ArrayList<>();
-                            for(int i=0;i<array.size();i++){
-                                JSONObject item = array.getJSONObject(i);
-                                String local_id = item.getString("local_id");
-                                String content = item.getString("content");
-                                String type = item.getString("type");
-                                String partner = item.getString("partner");
-                                String time = item.getString("time");
-                                String state = item.getString("state");
-                                String isPrivate = item.getString("isPrivate");
-                                String isRead = item.getString("isRead");
-
-                                MsgDetailBean msg = new MsgDetailBean(local_id, content, Integer.parseInt(type), time, partner, Integer.parseInt(state),Integer.parseInt(isPrivate), Integer.parseInt(isRead));
-                                msgs.add(msg);
-
-                            }
-                            fileHelper.WriteToFile(msgs);
-                        }
-                    }
-                });
 
             }
         });
@@ -202,12 +79,30 @@ public class SettingActivity extends AppCompatActivity {
         btn_exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences.Editor editor = sp.edit();
-                editor.clear();
-                editor.commit();
-                startActivity(new Intent(SettingActivity.this, MainActivity.class));
-                
-                finish();
+                new SweetAlertDialog(SettingActivity.this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("提示")
+                        .setContentText("是否注销登录")
+                        .setConfirmText("好的")
+                        .setCancelText("再等等")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismissWithAnimation();
+                                SharedPreferences.Editor editor = sp.edit();
+                                editor.clear();
+                                editor.commit();
+                                startActivity(new Intent(SettingActivity.this, MainActivity.class));
+
+                                finish();
+                            }
+                        })
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismissWithAnimation();
+                            }
+                        }).show();
+
             }
         });
 

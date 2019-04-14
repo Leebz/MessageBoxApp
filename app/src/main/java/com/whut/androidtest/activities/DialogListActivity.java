@@ -1,33 +1,21 @@
 package com.whut.androidtest.activities;
 
 import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.telephony.SmsMessage;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -35,15 +23,14 @@ import com.whut.androidtest.R;
 import com.whut.androidtest.adapter.DialogListAdapter;
 import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.bean.MsgPreviewBean;
+import com.whut.androidtest.util.AesEncryptionUtil;
 import com.whut.androidtest.util.FileHelper;
+import com.whut.androidtest.util.AESUtil;
 import com.xw.repo.widget.BounceScrollView;
 
-import java.nio.channels.Channel;
-import java.text.SimpleDateFormat;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import rx.functions.Action1;
@@ -93,7 +80,13 @@ public class DialogListActivity extends AppCompatActivity {
         IsEnterPrivateArea = false;
         //init fileHelper
         fileHelper = new FileHelper(this);
-        fileHelper.readContacts(this);
+        //TEST AES
+        String res = AesEncryptionUtil.encrypt("lbz","625202f9149e061d","5efd3f6060e20330");
+        try {
+            Log.d("加密", new String(AesEncryptionUtil.hex2byte(res), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
 
         //get permission

@@ -8,7 +8,7 @@
         </shape>
     </item>
     <!--第二层前景 底偏移1dp -->
-    <item android:bottom="1dp" android:right="1dp">
+    <item android:bottom="2dp" android:right="2dp">
         <shape>
 
             <solid android:color="#D1EEEE" />

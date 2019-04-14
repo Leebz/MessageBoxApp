@@ -44,6 +44,7 @@ dependencies {
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.github.woxingxiao:BounceScrollView:1.3'
     implementation 'com.github.f0ris.sweetalert:library:1.5.1'
+    implementation 'com.github.tozny:java-aes-crypto:1.1.0'
 
 
 

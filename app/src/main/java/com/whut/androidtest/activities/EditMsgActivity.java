@@ -32,6 +32,7 @@ import org.w3c.dom.Text;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
@@ -97,8 +98,10 @@ public class EditMsgActivity extends AppCompatActivity{
                 sms.sendTextMessage(number,null,text_content.getText().toString(),pi,null);
                 //Update DB
                 String uuid = UUID.randomUUID().toString().replaceAll("-","");
-                Log.d("UUID",uuid);
-                MsgDetailBean msg = new MsgDetailBean(uuid, text_content.getText().toString(),1, new Date().toLocaleString(), getPureNumber(number),1,0, 1);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                Date d = new Date();
+                String strDate = dateFormat.format(d);
+                MsgDetailBean msg = new MsgDetailBean(uuid, text_content.getText().toString(),1, strDate, getPureNumber(number),1,0, 1);
 
                 WriteToFile(msg);
 

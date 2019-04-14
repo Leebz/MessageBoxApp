@@ -47,7 +47,7 @@ public class PrivateDialogList extends AppCompatActivity {
         adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                String partner = list.get(position).getUsername();
+                String partner = list.get(position).getPhonenumber();
                 Intent intent = new Intent(PrivateDialogList.this, PrivateChatActivity.class);
                 intent.putExtra("partner", partner);
                 startActivity(intent);

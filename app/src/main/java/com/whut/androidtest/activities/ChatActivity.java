@@ -35,6 +35,7 @@ import com.whut.androidtest.util.FileHelper;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,49 +54,10 @@ public class ChatActivity extends AppCompatActivity {
     public static String partner;
     private ArrayList<MsgDetailBean> data;
     private FileHelper fileHelper;
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getExtras();
-            SmsMessage msg = null;
-            if(bundle!=null){
-                Object[] smsObj = (Object[])bundle.get("pdus");
-                for(Object object:smsObj){
-                    msg = SmsMessage.createFromPdu((byte[]) object);
-                    Log.d("短信内容",msg.getOriginatingAddress()+" "+msg.getDisplayMessageBody());
-                    //write to file
-                    String uuid = UUID.randomUUID().toString().replaceAll("-","");
 
-                    MsgDetailBean msgBean = new MsgDetailBean(uuid,msg.getDisplayMessageBody(), 0,
-                            new Date().toLocaleString(),msg.getOriginatingAddress(),1, 0 ,1);
-                    //update UI
-                    if(partner.equals(msgBean.getPartner())){
-                        msgBean.setIsRead(0);
-                        data.add(msgBean);
-                        mAdapter.notifyDataSetChanged();
-                    }
-                    fileHelper.WriteToFile(msgBean);
 
-                }
-            }
-        }
-    };
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //Register boardcast
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
-//        registerReceiver(broadcastReceiver, intentFilter);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-//        unregisterReceiver(broadcastReceiver);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,6 +174,10 @@ public class ChatActivity extends AppCompatActivity {
                                             data.remove(position);
                                             mAdapter.notifyDataSetChanged();
                                             sweetAlertDialog.dismissWithAnimation();
+                                            if(data.size()==0){
+                                                startActivity(new Intent(ChatActivity.this, DialogListActivity.class));
+                                                finish();
+                                            }
 
                                         }
                                     })
@@ -244,10 +210,14 @@ public class ChatActivity extends AppCompatActivity {
                     sms.sendTextMessage(partner,null,text_input.getText().toString(),pi,null);
                     //update local data file
                     String uuid = UUID.randomUUID().toString().replaceAll("-","");
-                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, new Date().toLocaleString(), fileHelper.getPureNumber(partner),1, 0 ,0);
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    Date d = new Date();
+                    String strDate = dateFormat.format(d);
+                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, strDate, fileHelper.getPureNumber(partner),1, 0 ,0);
                     data.add(msg);
                     fileHelper.WriteToFile(msg);
                     //redraw UI
+                    mAdapter.setNewData(data);
                     mAdapter.notifyDataSetChanged();
                     text_input.setText("");
 

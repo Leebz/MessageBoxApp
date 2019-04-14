@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
@@ -22,8 +23,10 @@ import com.whut.androidtest.adapter.ChatListAdapter;
 import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.util.FileHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -47,7 +50,16 @@ public class PrivateChatActivity extends AppCompatActivity {
         fileHelper = new FileHelper(PrivateChatActivity.this);
         partner = getIntent().getExtras().getString("partner");
         text_user_info = findViewById(R.id.text_receiver);
-        text_user_info.setText(partner);
+        HashMap<String, String> contacts = fileHelper.readContacts(this);
+        if(contacts.containsKey(partner)){
+            text_user_info.setText(contacts.get(partner));
+        }
+        else {
+            text_user_info.setText(partner);
+        }
+
+        text_input = findViewById(R.id.text_input);
+        btn_send = findViewById(R.id.btn_send);
         text_input = findViewById(R.id.text_input);
         btn_send = findViewById(R.id.btn_send);
 
@@ -58,6 +70,9 @@ public class PrivateChatActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         data = fileHelper.getMsgList(partner, 1);
+        for(MsgDetailBean msgDetailBean : data ){
+            Log.d("UUUUUUUUUUUUUUUUUUUUU", msgDetailBean.getPartner()+"  "+msgDetailBean.getContent());
+        }
 
 
         mAdapter = new ChatListAdapter(R.layout.msg_detail_item, data);
@@ -120,6 +135,7 @@ public class PrivateChatActivity extends AppCompatActivity {
 
                                             data.remove(position);
                                             mAdapter.notifyDataSetChanged();
+                                            sweetAlertDialog.dismissWithAnimation();
 
                                         }
                                     })
@@ -152,7 +168,10 @@ public class PrivateChatActivity extends AppCompatActivity {
                     sms.sendTextMessage(partner,null,text_input.getText().toString(),pi,null);
                     //update local data file
                     String uuid = UUID.randomUUID().toString().replaceAll("-","");
-                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, new Date().toLocaleString(), fileHelper.getPureNumber(partner),1, 1, 1);
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    Date d = new Date();
+                    String strDate = dateFormat.format(d);
+                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, strDate, fileHelper.getPureNumber(partner),1, 1, 1);
                     data.add(msg);
                     fileHelper.WriteToFile(msg);
                     //redraw UI
