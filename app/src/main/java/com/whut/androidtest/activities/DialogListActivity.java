@@ -5,6 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,12 +25,10 @@ import com.whut.androidtest.R;
 import com.whut.androidtest.adapter.DialogListAdapter;
 import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.bean.MsgPreviewBean;
-import com.whut.androidtest.util.AesEncryptionUtil;
+import com.whut.androidtest.util.EasyAES;
 import com.whut.androidtest.util.FileHelper;
-import com.whut.androidtest.util.AESUtil;
 import com.xw.repo.widget.BounceScrollView;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,6 +72,7 @@ public class DialogListActivity extends AppCompatActivity {
 //        registerReceiver(broadcastReceiver, intentFilter);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,12 +82,14 @@ public class DialogListActivity extends AppCompatActivity {
         //init fileHelper
         fileHelper = new FileHelper(this);
         //TEST AES
-        String res = AesEncryptionUtil.encrypt("lbz","625202f9149e061d","5efd3f6060e20330");
-        try {
-            Log.d("加密", new String(AesEncryptionUtil.hex2byte(res), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        String s = EasyAES.encryptString("lbz");
+        Log.d("密文", s);
+        String a = EasyAES.decryptString(s);
+        Log.d("明文", a);
+
+
+
+
 
 
         //get permission

@@ -30,6 +30,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.whut.androidtest.R;
 import com.whut.androidtest.adapter.DialogListAdapter;
 import com.whut.androidtest.bean.MsgDetailBean;
+import com.whut.androidtest.util.EasyAES;
 import com.whut.androidtest.util.FileHelper;
 
 
@@ -188,14 +189,14 @@ public class MainActivity extends AppCompatActivity {
         else{
             String phoneNumber = text_phone.getText().toString();
             String password = text_psw.getText().toString();
-            String res;
+            String encryptpsw = EasyAES.encryptString(password);
 
             MediaType mediaType = MediaType.parse("text/x-markdown; charset=utf-8");
             OkHttpClient okHttpClient = new OkHttpClient();
             RequestBody requestBody = new FormBody.Builder()
                     .add("type", "login")
                     .add("phoneNumber",phoneNumber)
-                    .add("password", password)
+                    .add("password", encryptpsw)
                     .build();
             Request request = new Request.Builder()
                     .url("http://116.62.247.192/Android/login.php")

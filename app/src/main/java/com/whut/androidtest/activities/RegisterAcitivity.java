@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.whut.androidtest.R;
+import com.whut.androidtest.util.EasyAES;
 
 import java.io.IOException;
 
@@ -55,15 +56,17 @@ public class RegisterAcitivity extends AppCompatActivity {
                 else{
                     String phoneNumber = phoneNum.getText().toString();
                     String psw = password.getText().toString();
+                    String encryptpsw = EasyAES.encryptString(psw);
 
                     OkHttpClient okHttpClient = new OkHttpClient();
                     RequestBody requestBody = new FormBody.Builder()
                             .add("type","reg")
                             .add("phoneNum",phoneNumber)
-                            .add("psw",psw)
+                            .add("psw",encryptpsw)
                             .build();
                     Request request = new Request.Builder()
                             .url("http://116.62.247.192/Android/login.php")
+//                            .url("http://10.0.2.2/Android/login.php")
                             .post(requestBody)
                             .build();
                     okHttpClient.newCall(request).enqueue(new Callback() {

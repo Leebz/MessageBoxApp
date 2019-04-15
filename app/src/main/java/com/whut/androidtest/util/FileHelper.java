@@ -154,17 +154,7 @@ public class FileHelper {
         return data;
 
     }
-    public ArrayList<MsgPreviewBean> castPrivatePreview(ArrayList<MsgDetailBean> details){
-        ArrayList<MsgPreviewBean> res = new ArrayList<>();
-        //按照时间逆序 由新到旧输出
-        for(int i=details.size()-1;i>=0;i--){
-            MsgDetailBean msg = details.get(i);
-            if(msg.getState()!=-1&&msg.getIsPrivate()==1){
-                res.add(new MsgPreviewBean(msg.getPartner(),msg.getPartner(),msg.getDate(),getPreviewContent(msg.getContent())));
-            }
-        }
-        return res;
-    }
+
     public String getPreviewContent(String content){
         String res = content;
         if(content.length()>40){
@@ -361,13 +351,14 @@ public class FileHelper {
                     }).show();
         }
         else if(msgTobeSend.size() > 0||msgTobeDelete.size() > 0||msgTobeModified.size()>0){
-            Dialog dialog = CustomProgressDialog.createLoadingDialog(context, "正在加载中...");
+            Dialog dialog = CustomProgressDialog.createLoadingDialog(context, "正在备份中...");
             dialog.setCancelable(false);
             dialog.show();
+
             String jsonStr = JSON.toJSONString(msgTobeSend);
             String jsonDelete = JSON.toJSONString(msgTobeDelete);
             String jsonModify = JSON.toJSONString(msgTobeModified);
-            Log.d("JSON", "JSON  "+jsonModify);
+            Log.d("JSON", "JSON  "+jsonStr);
             OkHttpClient okHttpClient = new OkHttpClient();
             RequestBody requestBody = new FormBody.Builder()
                     .add("host", host)
