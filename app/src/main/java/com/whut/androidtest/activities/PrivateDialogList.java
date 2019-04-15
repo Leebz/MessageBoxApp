@@ -24,6 +24,16 @@ public class PrivateDialogList extends AppCompatActivity {
     private FileHelper fileHelper;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if(list!=null){
+            list = fileHelper.getDialogList(fileHelper.ReadFromFile(), this, 1);
+            adapter.setNewData(list);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);

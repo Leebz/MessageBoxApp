@@ -63,32 +63,44 @@ public class SMSReceiver extends BroadcastReceiver{
                 String strDate = dateFormat.format(d);
 
                 MsgDetailBean msgBean = new MsgDetailBean(uuid, msg.getDisplayMessageBody(), 0,
-                        strDate,msg.getOriginatingAddress(),1,0, 1);
+                        strDate,fileHelper.ProcessNumber(msg.getOriginatingAddress()),1,0, 1);
                 Log.d("NEWMSG", msgBean.getPartner()+"  "+msgBean.getState()+"  "+msgBean.getIsRead());
 
-                fileHelper.WriteToFile(msgBean);
 
-                String user = fileHelper.getCorrespondingContact(msg.getOriginatingAddress());
-                String notificationBody = fileHelper.getPreviewContent(msg.getDisplayMessageBody());
-                //SEND NOTIFICATION
-                NotificationChannel notificationChannel = new NotificationChannel("yunxin","新短信", NotificationManager.IMPORTANCE_HIGH);
-                NotificationManager notificationManager = (NotificationManager)context.getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.createNotificationChannel(notificationChannel);
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"yunxin")
-                        .setSmallIcon(R.drawable.launcher)
-                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.launcher))
-                        .setAutoCancel(true)
-                        .setContentTitle(user)
-                        .setContentText(notificationBody);
-                Intent resultIntent = new Intent(context, ChatActivity.class);
-                resultIntent.putExtra("partner",msgBean.getPartner());
-                TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-                stackBuilder.addParentStack(ChatActivity.class);
-                stackBuilder.addNextIntent(resultIntent);
-                PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-                builder.setContentIntent(resultPendingIntent);
-                notificationManager.notify(123,builder.build());
 
+
+
+                if(ChatActivity.mAdapter!=null&&ChatActivity.partner!=null&&ChatActivity.partner.equals(msgBean.getPartner())){
+                    msgBean.setIsRead(0);
+                    fileHelper.WriteToFile(msgBean);
+                    ArrayList<MsgDetailBean> chatList = fileHelper.getMsgList(msgBean.getPartner(),0);
+                    ChatActivity.mAdapter.setNewData(chatList);
+                    ChatActivity.mAdapter.notifyDataSetChanged();
+                }
+                else{
+                    fileHelper.WriteToFile(msgBean);
+                    //未与该用户聊天时 发送通知
+                    String user = fileHelper.getCorrespondingContact(msgBean.getPartner());
+                    String notificationBody = fileHelper.getPreviewContent(msgBean.getContent());
+                    //SEND NOTIFICATION
+                    NotificationChannel notificationChannel = new NotificationChannel("yunxin","新短信", NotificationManager.IMPORTANCE_HIGH);
+                    NotificationManager notificationManager = (NotificationManager)context.getSystemService(NOTIFICATION_SERVICE);
+                    notificationManager.createNotificationChannel(notificationChannel);
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context,"yunxin")
+                            .setSmallIcon(R.drawable.launcher)
+                            .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.launcher))
+                            .setAutoCancel(true)
+                            .setContentTitle(user)
+                            .setContentText(notificationBody);
+                    Intent resultIntent = new Intent(context, ChatActivity.class);
+                    resultIntent.putExtra("partner",msgBean.getPartner());
+                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+                    stackBuilder.addParentStack(ChatActivity.class);
+                    stackBuilder.addNextIntent(resultIntent);
+                    PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                    builder.setContentIntent(resultPendingIntent);
+                    notificationManager.notify(123,builder.build());
+                }
                 //UPDATE UI
 
                 if(DialogListActivity.mAdapter!=null){
@@ -97,15 +109,6 @@ public class SMSReceiver extends BroadcastReceiver{
                     DialogListActivity.mAdapter.setNewData(list);
                     DialogListActivity.mAdapter.notifyDataSetChanged();
                 }
-                if(ChatActivity.mAdapter!=null){
-                    if(ChatActivity.partner!=null&&ChatActivity.partner.equals(msgBean.getPartner())){
-                        ArrayList<MsgDetailBean> chatList = fileHelper.getMsgList(msgBean.getPartner(),0);
-                        msgBean.setIsRead(0);
-                        ChatActivity.mAdapter.setNewData(chatList);
-                        ChatActivity.mAdapter.notifyDataSetChanged();
-                    }
-                }
-
 
 
             }

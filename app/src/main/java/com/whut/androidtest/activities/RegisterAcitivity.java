@@ -2,11 +2,13 @@ package com.whut.androidtest.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +20,7 @@ import com.whut.androidtest.util.EasyAES;
 
 import java.io.IOException;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -28,9 +31,9 @@ import okhttp3.Response;
 
 public class RegisterAcitivity extends AppCompatActivity {
     private BootstrapButton btn_regiser;
-    private TextView phoneNum;
-    private TextView password;
-    private TextView repeatPsw;
+    private EditText phoneNum;
+    private EditText password;
+    private EditText repeatPsw;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +89,25 @@ public class RegisterAcitivity extends AppCompatActivity {
                                 editor.putString("PHONE_NUM", phoneNumber);
                                 editor.commit();
                                 startActivity(new Intent(RegisterAcitivity.this, DialogListActivity.class));
+                                finish();
+                            }
+                            else{
+                                Looper.prepare();
+                                new SweetAlertDialog(RegisterAcitivity.this, SweetAlertDialog.WARNING_TYPE)
+                                        .setTitleText("提示")
+                                        .setContentText("该账号已被注册")
+                                        .setConfirmText("好的")
+                                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                            @Override
+                                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                                sweetAlertDialog.dismissWithAnimation();
+                                                phoneNum.setText("");
+                                                password.setText("");
+                                                repeatPsw.setText("");
+                                            }
+                                        }).show();
+                                Looper.loop();
+
                             }
 
                         }

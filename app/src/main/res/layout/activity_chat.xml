@@ -58,6 +58,8 @@
             android:hint="短信"
             android:id="@+id/text_input"
             app:roundedCorners="true"
+            android:maxLines="3"
+            app:bootstrapSize="lg"
             />
 
         <com.beardedhen.androidbootstrap.BootstrapButton

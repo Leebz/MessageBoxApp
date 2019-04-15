@@ -27,6 +27,7 @@ import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.bean.MsgPreviewBean;
 import com.whut.androidtest.util.EasyAES;
 import com.whut.androidtest.util.FileHelper;
+import com.whut.androidtest.util.PermissionUtil;
 import com.xw.repo.widget.BounceScrollView;
 
 import java.util.ArrayList;
@@ -52,7 +53,6 @@ public class DialogListActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-//        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -67,9 +67,7 @@ public class DialogListActivity extends AppCompatActivity {
             mAdapter.setNewData(list);
             mAdapter.notifyDataSetChanged();
         }
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
-//        registerReceiver(broadcastReceiver, intentFilter);
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -81,35 +79,8 @@ public class DialogListActivity extends AppCompatActivity {
         IsEnterPrivateArea = false;
         //init fileHelper
         fileHelper = new FileHelper(this);
-        //TEST AES
-        String s = EasyAES.encryptString("lbz");
-        Log.d("密文", s);
-        String a = EasyAES.decryptString(s);
-        Log.d("明文", a);
-
-
-
-
-
-
         //get permission
-        RxPermissions.getInstance(DialogListActivity.this)
-                .request(Manifest.permission.SEND_SMS,
-                        Manifest.permission.READ_SMS,
-                        Manifest.permission.RECEIVE_SMS,
-                        Manifest.permission.READ_CONTACTS)
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        if(aBoolean){
-                            Log.d("PERMISSION","OK");
-                        }
-                        else{
-                            Log.d("DENY","NMO");
-                        }
-                    }
-                });
-
+        PermissionUtil.getPermission(this);
         //get host info
         SharedPreferences sp = getSharedPreferences("USERINFO",0);
         String host = sp.getString("PHONE_NUM","");

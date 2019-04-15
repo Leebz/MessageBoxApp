@@ -48,7 +48,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             app:roundedCorners="true"
-            app:bootstrapBrand="primary"/>
+            app:bootstrapBrand="primary"
+            android:maxLines="3"
+            app:bootstrapSize="lg"/>
 
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:layout_width="wrap_content"

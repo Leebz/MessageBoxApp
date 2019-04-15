@@ -5,7 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
+import android.support.annotation.RequiresApi;
 import android.support.annotation.RequiresPermission;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -28,6 +30,7 @@ import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -258,14 +261,19 @@ public class FileHelper {
         WriteToFile(list);
 
     }
-    public String getPureNumber(String data){
-        String res = "";
-        for(int i=0;i<data.length();i++){
-            if(data.charAt(i)!=' '&&data.charAt(i)!='-'){
-                res += data.charAt(i);
+
+    public String ProcessNumber(String number){
+
+        number =  number.replaceAll("\\+86","");
+        StringBuffer sb = new StringBuffer();
+        for(int i=0;i<number.length();i++){
+            if(number.charAt(i)<='9'&&number.charAt(i)>='0'){
+                sb.append(number.charAt(i));
             }
         }
-        return res;
+
+        return sb.toString();
+
     }
     public HashMap<String,String> readContacts(Context context){
         HashMap<String, String> res = new HashMap<>();
@@ -277,7 +285,7 @@ public class FileHelper {
                     String displayname = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                     String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
-                    res.put(getNumber(number), displayname);
+                    res.put(ProcessNumber(number), displayname);
 
                 }
             }
@@ -292,16 +300,7 @@ public class FileHelper {
 
         return  res;
     }
-    public String getNumber(String data){
-        StringBuffer sb = new StringBuffer();
-        for(int i=0;i<data.length();i++){
-            if(data.charAt(i)<='9'&&data.charAt(i)>='0'){
-                sb.append(data.charAt(i));
-            }
-        }
 
-        return sb.toString();
-    }
     public boolean hasBackup(){
 
         ArrayList<MsgDetailBean> msgs = ReadFromFile();
@@ -367,7 +366,7 @@ public class FileHelper {
                     .add("modify", jsonModify)
                     .build();
             Request request = new Request.Builder()
-//                            .url("http://10.0.2.2/Android/backup.php")
+//                  .url("http://10.0.2.2/Android/backup.php")
                     .url("http://116.62.247.192/Android/backup.php")
                     .post(requestBody)
                     .build();
@@ -466,7 +465,7 @@ public class FileHelper {
                 .build();
         Request request = new Request.Builder()
                 .url("http://116.62.247.192/Android/syn.php")
-//                        .url("http://10.0.2.2/Android/syn.php")
+//              .url("http://10.0.2.2/Android/syn.php")
                 .post(requestBody)
                 .build();
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -508,6 +507,16 @@ public class FileHelper {
                     dialog.dismiss();
 
                 }
+            }
+        });
+    }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void sortByTime(ArrayList<MsgDetailBean> msgs){
+        msgs.sort(new Comparator<MsgDetailBean>() {
+            @Override
+            public int compare(MsgDetailBean o1, MsgDetailBean o2) {
+
+                return 0;
             }
         });
     }

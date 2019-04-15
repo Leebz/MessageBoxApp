@@ -31,6 +31,7 @@ import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.R;
 import com.whut.androidtest.adapter.ChatListAdapter;
 import com.whut.androidtest.util.FileHelper;
+import com.whut.androidtest.util.PermissionUtil;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -55,31 +56,18 @@ public class ChatActivity extends AppCompatActivity {
     private ArrayList<MsgDetailBean> data;
     private FileHelper fileHelper;
 
-
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_chat);
-        RxPermissions.getInstance(ChatActivity.this)
-                .request(Manifest.permission.SEND_SMS,
-                        Manifest.permission.READ_SMS,
-                        Manifest.permission.RECEIVE_SMS,
-                        Manifest.permission.READ_CONTACTS)
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        if(aBoolean){
-                            Log.d("PERMISSION","OK");
-                        }
-                        else{
-                            Log.d("DENY","NMO");
-                        }
-                    }
-                });
+        //get permissioin
+        PermissionUtil.getPermission(this);
         //init fileHelper
         fileHelper = new FileHelper(ChatActivity.this);
         partner = getIntent().getExtras().getString("partner");
@@ -167,7 +155,10 @@ public class ChatActivity extends AppCompatActivity {
                                             for(MsgDetailBean msg:msgs){
                                                 if(msg.getId().equals(data.get(position).getId())){
                                                     msg.setIsPrivate(1);
-                                                    msg.setState(2);
+                                                    //未同步时仍然是新增状态
+                                                    if(msg.getState()==0){
+                                                        msg.setState(2);
+                                                    }
                                                 }
                                             }
                                             fileHelper.WriteToFile(msgs);
@@ -184,6 +175,7 @@ public class ChatActivity extends AppCompatActivity {
                                     .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                         @Override
                                         public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                            sweetAlertDialog.dismissWithAnimation();
 
                                         }
                                     })
@@ -213,7 +205,7 @@ public class ChatActivity extends AppCompatActivity {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                     Date d = new Date();
                     String strDate = dateFormat.format(d);
-                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, strDate, fileHelper.getPureNumber(partner),1, 0 ,0);
+                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, strDate, fileHelper.ProcessNumber(partner),1, 0 ,0);
                     data.add(msg);
                     fileHelper.WriteToFile(msg);
                     //redraw UI
@@ -229,5 +221,14 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("STOP", "onStop: ");
+        mAdapter = null;
+        partner = null;
     }
 }

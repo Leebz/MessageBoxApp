@@ -70,9 +70,7 @@ public class PrivateChatActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         data = fileHelper.getMsgList(partner, 1);
-        for(MsgDetailBean msgDetailBean : data ){
-            Log.d("UUUUUUUUUUUUUUUUUUUUU", msgDetailBean.getPartner()+"  "+msgDetailBean.getContent());
-        }
+
 
 
         mAdapter = new ChatListAdapter(R.layout.msg_detail_item, data);
@@ -171,7 +169,7 @@ public class PrivateChatActivity extends AppCompatActivity {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                     Date d = new Date();
                     String strDate = dateFormat.format(d);
-                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, strDate, fileHelper.getPureNumber(partner),1, 1, 1);
+                    MsgDetailBean msg = new MsgDetailBean(uuid, text_input.getText().toString(),1, strDate, fileHelper.ProcessNumber(partner),1, 1, 1);
                     data.add(msg);
                     fileHelper.WriteToFile(msg);
                     //redraw UI

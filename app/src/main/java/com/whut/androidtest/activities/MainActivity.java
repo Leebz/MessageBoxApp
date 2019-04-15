@@ -32,6 +32,7 @@ import com.whut.androidtest.adapter.DialogListAdapter;
 import com.whut.androidtest.bean.MsgDetailBean;
 import com.whut.androidtest.util.EasyAES;
 import com.whut.androidtest.util.FileHelper;
+import com.whut.androidtest.util.PermissionUtil;
 
 
 import org.w3c.dom.Text;
@@ -73,19 +74,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-//        Stetho.initializeWithDefaults(this);
         setContentView(R.layout.activity_main);
-//        if(checkDefaultSettings()){
-//            getPermission();
-//
-//        }
-//        else{
-//            finish();
-//        }
-        getPermission();
 
-
-
+        PermissionUtil.getPermission(this);
 
 
         text_phone = findViewById(R.id.phoneNumText);
@@ -99,12 +90,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-        else{
-            //获取短信
-
-        }
-
-
 
         btn_login = findViewById(R.id.btn_login);
         btn_register = findViewById(R.id.btn_register);
@@ -117,25 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void getPermission(){
-        //申请权限
-        RxPermissions.getInstance(MainActivity.this)
-                .request(Manifest.permission.SEND_SMS,
-                        Manifest.permission.READ_SMS,
-                        Manifest.permission.RECEIVE_SMS,
-                        Manifest.permission.READ_CONTACTS)
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean aBoolean) {
-                        if(aBoolean){
-                            Log.d("PERMISSION","OK");
-                        }
-                        else{
-                            Log.d("DENY","NMO");
-                        }
-                    }
-                });
-    }
+
     private boolean checkDefaultSettings() {
 
         boolean isDefault = false;
@@ -244,7 +211,6 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 })
                                 .show();
-//                        Toast.makeText(MainActivity.this, "密码错误", Toast.LENGTH_SHORT).show();
                         Looper.loop();
 
 
